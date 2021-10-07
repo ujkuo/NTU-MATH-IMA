@@ -1,0 +1,164 @@
+\documentclass[a4paper, 12pt]{article}%twoside,
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{xeCJK}
+\usepackage{array}
+\setCJKmainfont{思源宋體 TW}
+\XeTeXlinebreaklocale "zh"
+\XeTeXlinebreakskip = 0pt plus 1pt %這兩行一定要加，中文才能自動換行
+
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\bear}{\begin{eqnarray*}}
+\newcommand{\eear}{\end{eqnarray*}}
+\newcommand{\bearr}{\begin{eqnarray}}
+\newcommand{\eearr}{\end{eqnarray}}
+\newcommand{\bi}{\begin{itemize}}
+\newcommand{\ei}{\end{itemize}}
+\newcommand{\bn}{\begin{enumerate}}
+\newcommand{\en}{\end{enumerate}}
+\newcommand{\bd}{\begin{description}}%\bd[]
+\newcommand{\ed}{\end{description}}
+\newcommand{\I}{\item}
+\newcommand{\varep}{\varepsilon}
+\newcommand{\mc}[1]{{\mathcal #1}}
+\newcommand{\mf}[1]{{\mathfrak #1}}
+\newcommand{\mb}[1]{{\mathbf #1}}
+\newcommand{\bb}[1]{{\mathbb #1}}
+
+%\pagestyle{empty} %後的指令不會執行(ignored)，可供撰寫comment
+\setlength{\textwidth}{18.5cm}
+\setlength{\oddsidemargin}{-1.7cm}
+\setlength{\evensidemargin}{1pt}
+\setlength{\topmargin}{-3cm}
+\setlength{\textheight}{26.5cm}
+
+\newcolumntype{R}{>{\displaystyle}r}
+\newcolumntype{C}{>{\displaystyle}c}
+\newcolumntype{L}{>{\displaystyle}l}
+
+\begin{document}
+\begin{center}
+{INTRODUCTION TO MATHEMATICAL ANALYSIS (I), FALL SEMESTER, 2021} \\  %[.2cm]
+{\sc Homework 1, \rm{\today} }
+\end{center}
+\medskip
+{Dept. \underline{\quad IM. \quad}\qquad 
+	Name \underline{\quad 郭宇杰\quad}\qquad 
+	Student ID\underline{\quad B07611039\quad} \qquad 
+	Grade \hrulefill }
+
+\bn
+\I {[R]} Ex. 1.6 (c) and (d) (definition and properties of exponential functions)\\
+{\bf Ans.} 可使用中文。於截止時限前上傳pdf檔至NTU COOL完成繳交作業，其中ID 改為自己的學號。 \hfill $\square$
+
+\I {[R]} Ex. 1.7 (logarithm of $y>0$ to the base $b>1$). \\
+{\bf Ans.}
+
+\I {[A]} Ex. 1.23 \& 1.48, [R] Ex. 15 (real and complex Lagrange identities)
+\bn
+\I
+Prove Lagrange identity for real numbers:
+\begin{equation}
+		\left( \sum_{k=1}^n a_k b_k\right)^2 =
+		\left( \sum_{k=1}^n a_k^2\right) \left( \sum_{k=1}^n b_k^2\right)
+		- \sum_{1\le k < j \le n} \left(  a_kb_j-a_jb_k \right)^2. 
+		\label{L}
+\end{equation}
+In fact, the left hand side of (\ref{L}) is the inner product 
+$\langle {\,\mathbf a, \mathbf b} \rangle$ of ${\mathbf a}=(a_1, \ldots, a_n)$ and
+${\mathbf b}=(b_1, \ldots, b_n)$ in $\mathbb R^n$.
+
+\I
+Define the inner product of ${\bf a}=(a_1, \ldots, a_n)$ and
+${\bf b}=(b_1, \ldots, b_n)$ in $\mathbb C^n$ by
+\[
+\langle {\,\mathbf a, \mathbf b} \rangle
+=\sum_{k=1}^n a_k \bar{b}_k.
+\]
+Derive a Lagrange identity of complex numbers by
+starting with $| \langle {\,\mathbf a, \mathbf b} \rangle \,|^2$.
+\I
+Derive the real and complex Cauchy-Schwarz inequalities from
+the respective real and complex Lagrange identities.
+Under what conditions do equalities hold, respectively?
+\en
+{\bf Ans.}
+\bn
+\I
+We start deriving from the left side.
+\[
+    \begin{array}{RL}
+        & \left( \sum_{k=1}^n a_k^2\right) \left( \sum_{k=1}^n b_k^2\right) - \sum_{1 \leq k < j \leq n}(a_kb_j - a_jb_k)^2 \\
+        = & \left( \sum_{k=1}^n a_k^2\right) \left( \sum_{k=1}^n b_k^2\right) - \sum_{1 \leq k < j \leq n}(a_k^2b_j^2 + a_j^2b_k^2 - 2a_ja_kb_jb_k)
+            - \sum^n_{k=1}a_k^2b_k^2 + \sum^n_{k=1}a_k^2b_k^2 \\
+        = & \left( \sum_{k=1}^n a_k^2\right) \left( \sum_{k=1}^n b_k^2\right) - \sum^n_{k=1} \sum^n_{j=1}a_k^2b_k^2 + \sum^n_{k=1}a_kb_k \sum^n_{j=1}a_kb_j \\
+        = & \left( \sum^n_{k=1}a_kb_k \right)^2 \hfill \square
+    \end{array}
+\]
+\I
+
+
+\en
+
+\I Let $F$ be an ordered field containing $\mathbb{Q}$.
+Classify the following properties of $F$ to group A and group B
+such that (1) properties in the same group are equivalent
+to each other and (2) every property in group A
+implies any property in group B, but not the converse.
+\bn
+\I The least-upper-bound property.
+\I The archimedean property.
+\I $\mathbb{Q}$ is dense in $F$.
+\I For any $x\in F, x>0$, there exists $n\in \mathbb{N}$
+such that $0<\frac 1 n< x$.
+\I If $A$ and $B$ are nonempty
+subsets of $F$ having the property that $x \le y$ for every 
+$x \in A$ and every $y \in B$ , then
+there exists $c \in F$ such that 
+$x \le c \le y$ for all $x \in A$ and $y \in B$. 
+ \en 
+{\bf Ans.}
+這裡展示，例如， $(a)\Rightarrow (b)$ 的寫法。
+ \hfill $\square$
+
+\I Let $Q[x]$ be the field
+of rational functions with real coefficients.
+For each $f\in Q[x]$ there exist unique
+polynomials $p=\sum_{j=0}^n p_jx^j, 
+q=\sum_{j=0}^m q_jx^j$ such that $p_n\ne 0, q_m=1$ and 
+$f=p/q$ is in lowest terms (that is, $p$ and $q$ have no
+nonconstant factors in common). With this notation, let
+$K=\{ f \in Q[x]\,:\, p_n > 0\}$ and define
+$f \prec g$ if $g-f \in K$.
+\bn
+\I Show that $\prec$ is an order which makes $Q[x]$ an 
+ordered field.
+\I Show that $Q[x]$ does not have the archimedean 
+property. Give an upper bound and a lower bound to 
+show that $\mathbb{N}$ is bounded in $Q[x]$.
+\en
+{\bf Ans.}
+
+\I (Nested Interval Property)
+A sequence of subsets $S_n$ is called {\it nested} if $S_{n+1}\subseteq
+S_n, n\in \mathbb{N}$. 
+Let $I_n=[a_n, b_n]\in \mathbb{R}$ be a nested sequence of 
+closed intervals. 
+\bn
+\I
+Prove that the nested sequence
+has a nonempty intersection; 
+that is, $\cap_{n=1}^\infty I_n\ne \emptyset$.
+\I
+Moreover, if it is known that for every $\varep>0$ there is an
+interval $I_k$ whose length $|I_k| < \varep$, then the point
+common to all the intervals is unique.
+\I 
+What can be said if the nested sets $I_n$ are open intervals
+$I_n= (a_n, b_n), n\in \mathbb N$? Give a proof or an example
+of your answer.
+\en 
+{\bf Ans.}
+\en
+\end{document}

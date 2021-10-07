@@ -1,0 +1,623 @@
+\documentclass[a4pap er]{article}
+%The main tex begins from line 188
+\usepackage[top = 2.5cm, bottom = 2.5cm, left = 2cm, right = 2cm]{geometry} 
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{etoolbox}
+\usepackage{indentfirst}
+\usepackage{tabularx}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{authblk}
+\usepackage[calcwidth]{titlesec}
+\usepackage{bookmark}
+\usepackage[capitalize]{cleveref}
+\usepackage{array}
+\usepackage[english]{babel}
+\usepackage{enumitem}
+\usepackage{centernot}
+%\usepackage[utf8]{inputenc}
+%\usepackage{CJKutf8}
+\usepackage{xeCJK}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\makeatletter
+% Macros for setting basic info
+\gdef\@uni{National Taiwan University}
+\gdef\@department{Information Management}
+\gdef\@me{Yu-Chieh Kuo}
+
+\newcommand{\course}[2][]{
+    \ifstrempty{#1}{
+        \gdef\shortcourse{#2}
+    }{
+        \gdef\shortcourse{#1}
+    }
+    \gdef\@course{#2}
+}
+\newcommand{\teacher}[1]{\gdef\@teacher{#1}}
+\newcommand{\semester}[1]{\gdef\@semester{#1}}
+\newcommand{\uni}[1]{\gdef\@uni{#1}}
+\newcommand{\department}[1]{\gdef\@department{#1}}
+\newcommand{\student}[3][]{
+    \ifstrempty{#1}{
+        \author{\textbf{#2} \textbf{#3}}
+    }{
+        \author[#1]{\textbf{#2} \textbf{#3}}
+    }
+}
+\newcommand{\assignment}[2][Homework]{
+    \ifstrempty{#2}{
+        \gdef\@assignment{#1}
+    }{
+        \gdef\@assignment{#1 #2}
+    }
+}
+
+% page style for title page
+\fancypagestyle{title}{
+    \fancyhf{}
+    \renewcommand{\headrulewidth}{0pt}
+    \cfoot{\footnotesize Page {\thepage} of \pageref{LastPage}} 
+}
+\newcommand{\ujtitle}{
+    \thispagestyle{title}
+    \noindent\begin{tabularx}{\linewidth}{Xr} % This is a simple tabular environment to align your text nicely 
+    {\large \bf{\@course}} \\
+    National Taiwan University, \@semester  \\
+    \bottomrule % \hline produces horizontal lines.
+    \end{tabularx}
+    
+    \vspace*{0.3cm}
+
+    \begin{center}
+        {\huge\bf\textsc{\@assignment}}\\[3mm]
+        {\@author}
+    \end{center}
+
+    \vspace*{0.3cm}
+}
+\newcommand{\mymaketitle}{
+    \thispagestyle{title}
+    \vspace*{-15mm}
+    \noindent\begin{tabularx}{\linewidth}{Xr}
+                                & \textsl{National Taiwan University} \\
+        \large\textbf{\@semester,} & \textsl{Department of \@department}         \\
+        \large\textbf{\@course} & \textsl{Prof. \@teacher}\Bstrut\\
+        \bottomrule
+    \end{tabularx}
+
+    \vspace*{10mm}
+
+    \begin{center}
+        {\huge\textsc{\@assignment{}}}\\[6mm]
+        {\@author}
+    \end{center}
+
+    \vspace*{1cm}
+}
+
+% page style for contents
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{13.6pt}
+\lhead{\small {\@course}: {\@assignment}}
+\rhead{\small {\@me}}
+\cfoot{\small {Page {\thepage} of \pageref{LastPage}}} 
+
+% Style for part, section, and subsection
+% Part
+\titleclass{\part}{straight}
+\titleformat{\part}
+[display]
+{\centering\bfseries}
+{\setlength{\titlewidth}{1.5\titlewidth}\large\titleline*[c]{\titlerule[.6pt]}\vspace{3pt}\MakeUppercase{\partname} \thepart}
+{0pt}
+{\LARGE\itshape}
+[{
+    \setlength{\titlewidth}{1.5\titlewidth}
+    \titleline*[c]{\titlerule*{\mdseries-}}
+}]
+\titlespacing*{\part}{0pt}{20pt}{20pt}[0pt]
+
+% Problem and subproblem
+\setcounter{secnumdepth}{0}
+\newcounter{problem}
+\newcounter{subproblem}[problem]
+\newbool{appendix}
+\gdef\problemName{Problem}
+\newcommand{\problem}[2][]{
+    \setcounter{equation}{0}
+    \ifstrempty{#1}{
+        \stepcounter{problem}
+    }{
+        \setcounter{problem}{#1}
+    }
+    \ifstrempty{#2}{
+        \ifbool{appendix}{
+            \section{\hspace{-5mm}\problemName{} \Alph{problem}.}
+        }{
+            \section{\hspace{-5mm}\problemName{} \arabic{problem}}
+        }
+    }{
+        \ifbool{appendix}{
+            \section{\hspace{-5mm}\problemName{} \Alpa{problem}: #2}
+        }{
+            \section{\hspace{-5mm}\problemName{} \arabic{problem}: #2}
+        }
+    }
+}
+\newcommand{\subproblem}[2][]{
+    \setcounter{equation}{0}
+    \ifstrempty{#1}{
+        \stepcounter{subproblem}
+    }{
+        \setcounter{subproblem}{#1}
+    }
+    \ifstrempty{#2}{
+        \ifbool{appendix}{
+            \section{\hspace{-2mm}\Alph{problem}.\arabic{subproblem}}
+        }{
+            \section{\hspace{-2mm}\arabic{problem}.(\alph{subproblem})}
+        }
+    }{
+        \ifbool{appendix}{
+            \section{\hspace{-2mm}\Alph{problem}.\arabic{subproblem}. #2}
+        }{
+            \section{ \hspace{-2mm}\arabic{problem}.(\alph{subproblem}) #2}
+        }
+    }
+}
+
+% Appendix
+\newcommand{\myAppendix}{
+    \setcounter{section}{0}
+    \renewcommand{\sectionname}{Appendix}
+    \renewcommand{\thesection}{\Alph{section}}
+    \renewcommand{\thesubsection}{\Alph{section}.\arabic{subsection}}
+    \renewcommand{\perhapscolon}[1]{\perhapsdot{##1}}
+}
+
+% Bookmarks
+\hypersetup{
+    bookmarksnumbered=true
+}
+
+% Reference nome for task and subtask
+\crefname{section}{\sectionname}{\sectionnamepl}
+
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \everymath{\displaystyle}
+
+% commands for spacing
+\newcommand{\Tstrut}{\rule{0pt}{4mm}}         % = `top' strut
+\newcommand{\Bstrut}{\rule[-2mm]{0mm}{0mm}}   % = `bottom' strut
+
+% Paired Delimiters {}, (), []
+\providecommand\given{} % so it exists
+\newcommand\SetSymbol[1][]{
+   \nonscript\,#1\vert \allowbreak \nonscript\,\mathopen{}}
+\DeclarePairedDelimiterX\Set[1]{\lbrace}{\rbrace}%
+ { \renewcommand\given{\SetSymbol[\delimsize]} #1 }
+\DeclarePairedDelimiterX{\Bkt}[1]{[}{]}{#1}
+\DeclarePairedDelimiterX{\Paren}[1]{(}{)}{#1}
+\DeclarePairedDelimiterX{\Abs}[1]{\lvert}{\rvert}{#1}
+\newcommand{\PR}[1]{\Pr\Bkt*{#1}}
+\newcommand{\overbar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
+
+\newcolumntype{D}{>{$(}l<{)$}}
+\newcolumntype{R}{>{\displaystyle}r}
+\newcolumntype{C}{>{\displaystyle}c}
+\newcolumntype{L}{>{\displaystyle}l}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsfonts}
+\usepackage{amsthm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Declare operator and useful math command
+\DeclareMathOperator{\EOp}{\mathbb{E}}
+\newcommand{\E}[1]{\ensuremath{\EOp\Bkt*{#1}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\ie}{\text{ i.e., }}
+\newcommand{\st}{\text{ s.t. }}
+\newcommand{\ve}{\varepsilon}
+
+% Declare delimiter
+\DeclareMathDelimiter{\lVert}
+  {\mathopen}{symbols}{"6B}{largesymbols}{"0D}
+\DeclareMathDelimiter{\rVert}
+  {\mathclose}{symbols}{"6B}{largesymbols}{"0D}
+  \DeclarePairedDelimiter\norm{\lvert}{\rvert}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\theoremstyle{plain}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setCJKmainfont{思源宋體 TW}
+%\setmainfont{思源宋體 TW}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+%\begin{CJK*}{UTF8}{bsmi}
+\course{Introduction to Mathematical Analysis (I)}
+\semester{Fall 2021}
+%\teacher{}
+%\department{}
+\assignment{1}
+\date{\today}
+\student[$\dagger$]{Yu-Chieh Kuo}{B07611039}
+\affil[$\dagger$]{Department of Information Management, National Taiwan University}
+\ujtitle
+\problem{Definition and properties of exponential functions}
+\subproblem{}
+Since $b>1$, the function $t \mapsto b^t$ is increasing.
+Given any $r, t \in \Q, \ t \leq r$, since $b^t \leq b^r$,
+we have $\sup B(r) \leq b^r$.
+Conversely, $r \in B(r) \implies b^r \leq \sup B(r)$. 
+Therefore, it suffices to say $b^r = \sup B(r) \ \forall r \in \Q$.
+
+\subproblem{}
+Let 
+\[
+    \begin{array}{RCL}
+        B(x) & = & \{ b^r | r \in \Q, \ r \leq x \} \\
+        B(y) & = & \{ b^s | s \in \Q, \ s \leq y \} \\
+        B(x+y) & = & \{ b^t | t \in \Q, \ t \leq x + y\} \\
+               & = & \{b^rb^s | r, s \in \Q, \ r \leq x,
+               \ s \leq y \},
+    \end{array}
+\]
+and
+\[
+    \begin{array}{RCL}
+        b^x & = & \sup B(x)\\
+        b^y & = & \sup B(y) \\
+        b^{x+y} & = & \sup B(x+y).
+    \end{array}
+\]
+Since
+\[
+    B(x+y) = b^rb^s \leq b^xb^y = \sup B(x) \sup B(y),
+\]
+take supremun, $\sup B(x+y) \leq \sup B(x) \sup B(y)$.
+Moreover, for $b^rb^s = b^{r+s} \leq \sup B(x+y)$, we have
+\[
+    \begin{array}{RL}
+        & b^r \leq \frac{\sup B(x+y)}{b^s}  \\ [4mm]
+        \implies & \sup B(x) \leq \frac{\sup B(x+y)}{b^s} \\[4mm]
+        & \text{(Here $\frac{\sup B(x+y)}{b^s}$ is an
+        upper bound of $b^r$.)} \\ [4mm]
+        \implies & \sup B(x) \leq \frac{\sup B(x+y)}{\sup B(y)}  \\ [4mm]
+        \implies & \sup B(x) \sup B(y) \leq \sup B(x+y). 
+    \end{array}
+\]
+Therefore, we derive $\sup B(x) \sup B(y) = \sup B(x+y)$ 
+i.e., $b^xb^y = b^{x+y}$ for all real $x$ and $y$.
+\problem{Logarithm}
+\begin{enumerate}[label = (\alph*)]
+\item 
+\[
+    \begin{array}{LLL}
+    b^n - 1 & = b^n - 1^ n & = (b-1)\underbrace{(b^{n-1}) + b^{n-2} + \cdots + 1}_{n} \\
+        & & \geq (b-1)\underbrace{(1 + 1 + \cdots + 1)}_{n} \\
+        & &= n(b-1).
+    \end{array}
+\]
+\item Put $b \mapsto b^{\frac{1}{n}}$ in (a) then it's proven.
+\item 
+    \[
+        n > \frac{b-1}{t-1} \implies n(t-1) > b-1 
+        \geq n(b^{\frac{1}{n}} - 1),
+    \]
+    where $n,\, b,\, t$ are positive, hence, $t > b^{\frac{1}{n}}.$
+\item
+    Let $t = y\cdot b^{-w} > 1$. By (c), we have
+\[
+    \begin{array}{RLL}
+        & b^{\frac{1}{n}} < y \cdot b^{-w} & \text{for } n > \frac{b-1}{y\cdot b^{-w}-1} \\
+        \iff & b^{\frac{1}{n}+w} > y & \text{for } n > \frac{b-1}{y\cdot b^{-w}-1}.
+    \end{array}
+\]
+\item
+    Let $t = y^{-1}\cdot b^w > 1$. By (c), we have 
+    \[
+        \begin{array}{RLL}
+            & b^{\frac{1}{n}} < y^{-1}\cdot b^w & \text{for } n > \frac{b-1}{y\cdot b^{-w}-1} \\
+            \iff & b^{w-\frac{1}{n}} > y & \text{for } n > \frac{b-1}{y\cdot b^{-w}-1}.
+        \end{array}
+    \]
+\item Suppose $b^x < y$, (d) implies that $b^{w+\frac{1}{n}}
+    < y$ for sufficiently large $n$. 
+    Suppose $b^x > y$, (e) implies that $b^{w - \frac{1}{n}}
+    < y$ for sufficiently large $n$.
+Both conditions above indicate that $x$ cannot be $\sup A$
+satisfying $b^x = y$.
+    Hence, $x = \sup A$ satisfies $b^x=y$.
+\item
+By contradiction, if there were another $x' \neq x$
+such that $b^{x'} = y$, then $x'>x$ or $x'<x$.
+For the case $x'>x$, $y=b^{x'} > b^x = y$, which is contradicted. 
+Similarly, for the case $x' < x$, $y=b<{x'} < b^x=y$ is also
+contradicted. Hence, $x$ should be unique.
+\end{enumerate}
+
+\problem{Cauchy-Schwarz Inequality}
+\subproblem{} We start deriving from the left side.
+\[
+    \begin{array}{RL}
+        & \left( \sum_{k=1}^n a_k^2\right) \left( \sum_{k=1}^n b_k^2\right)
+        - \sum_{1 \leq k < j \leq n}(a_kb_j - a_jb_k)^2 \\
+        = & \left( \sum_{k=1}^n a_k^2\right) \left( \sum_{k=1}^n b_k^2\right)
+        - \sum_{1 \leq k < j \leq n}(a_k^2b_j^2 + a_j^2b_k^2 - 2a_ja_kb_jb_k)
+            - \sum^n_{k=1}a_k^2b_k^2 + \sum^n_{k=1}a_k^2b_k^2 \\
+        = & \left( \sum_{k=1}^n a_k^2\right) \left( \sum_{k=1}^n b_k^2\right)
+        - \sum^n_{k=1} \sum^n_{j=1}a_k^2b_j^2 + \sum^n_{k=1}a_kb_k \sum^n_{j=1}a_kb_j \\
+        = & \left( \sum_{k=1}^n a_k^2\right) \left( \sum_{k=1}^n b_k^2\right) 
+        - \left( \sum_{k=1}^n a_k^2\right) \left( \sum_{k=1}^n b_k^2\right)
+        + \sum^n_{k=1}a_kb_k \sum^n_{j=1}a_kb_j \\
+        = & \left( \sum^n_{k=1}a_kb_k \right)^2.
+    \end{array}
+\]
+
+\subproblem{}
+\[
+    \begin{array}{RCL}
+        \lvert \langle{\bf a,b}\rangle\rvert^2 & = & \left|
+        \sum_{k=1}^n a_k \bar{b}_k \right | ^2 \\
+        & = & \sum_{k=1}^na_k \bar{b}_k \cdot  \sum_{k=1}^n\bar{a}_k b_k \\ [5mm]
+        & = & \sum_{1 \leq j,k \leq n}a_k\bar{a}_j b_j\bar{b}_k \\ [5mm]
+        & = & \sum_{k=1}^n\lvert a_k\bar{b}_k\rvert^2
+        + \sum_{1\leq k < j \leq n}a_k\bar{a}_jb_j\bar{b}_k + a_j\bar{a}_kb_k\bar{b}_j
+        + \sum_{1\leq j,k \leq n, j\neq k}\lvert a_k\bar{b}_j \rvert^2
+        - \sum_{1\leq j,k \leq n, j\neq k}\lvert a_k\bar{b}_j \rvert^2 \\
+        & = & \sum_{k=1}^n \lvert a_k\rvert^2 \sum_{j=1}^n \lvert \bar{b}_j\rvert^2
+        - \left( \sum_{1\leq k < j \leq n} \lvert a_k\bar{b}_j\rvert^2
+        + \lvert a_j\bar{b}_k\rvert^2
+        + a_k\bar{a}_jb_j\bar{b}_k + a_j\bar{a}_kb_k\bar{b}_j \right) \\
+        & = & \sum_{k=1}^n \lvert a_k\rvert^2 \sum_{j=1}^n \lvert \bar{b}_j\rvert^2
+        - \sum_{1\leq k < j \leq n}\lvert a_k\bar{b}_j - a_j\bar{b}_k \rvert^2.
+    \end{array}
+\]
+As a result, the Lagrange identity of complex number is
+\[
+    \left | \sum_{k=1}^n a_k \bar{b}_k \right | ^2 = 
+    \sum_{k=1}^n \lvert a_k\rvert^2 \sum_{j=1}^n \lvert \bar{b}_j\rvert^2 -
+    \sum_{1\leq k < j \leq n}\lvert a_k\bar{b}_j - a_j\bar{b}_k \rvert^2.
+\]
+\subproblem{}
+Observe the results in 3(a) and 3(b) above, we may derive that
+\[
+    \begin{array}{RCL}
+        \left( \sum_{k=1}^na_kb_k \right)^2 & \leq & 
+        \left( \sum_{k=1}^na_k^2 \right) \left( \sum_{k=1}^nb_k^2 \right) \\
+        \left | \sum_{k=1}^na_k\bar{b}_k\right |^2 & \leq &
+        \sum_{k=1}^n \lvert a_k\rvert^2 \sum_{j=1}^n \lvert \bar{b}_j\rvert^2,
+    \end{array}
+\]
+and these two inequalities representing the Cauchy-Schwarz inequalities
+in respective real and complex number.
+Under the condition that, when $\sum_{1\leq k<j\leq n}(a_kb_j-a_jb_k)^2$ and
+$\sum_{1\leq k < j \leq n}\lvert a_k\bar{b}_j - a_j\bar{b}_k \rvert^2$ hold,
+the inequalities hold respectively.
+
+%p4
+\problem{Equivalent Properties}
+We classify that group $A$ contains (a), (e), and group $B$
+contains (b), (c), (d).\\
+\textbf{(Group A)}
+\begin{enumerate}
+    \item \textbf{(a) $\implies$ (e)} \\
+Suppose order field $F$ holds the least-upper-bound property
+(In the following, we abbreviate least-upper-bound property
+as LUB property), then for two non-empty bounded below
+subsets $A, B \subset F$, with the property that $x \leq y$
+for every $x \in A$ and every $y \in B$, by \textbf{Theorem
+1.11} in Rudin, we claim that $\inf B$ exists, and $\sup A$
+exists as it's bounded by $B$.
+
+Next, by the relation between $x$ and $y$, we derive
+\[
+    \begin{array}{RL}
+        & x \leq y \ \forall x \in A, \ \forall y \in B \\
+        \iff & \text{$y$ is an upper bound of $A$, } \forall
+        y \in B \\
+        \iff & y \geq \sup A, \ \forall y \in B \\
+        \iff & \sup A \text{ is a lower bound of } B \\
+        \iff & \sup A \leq \inf B.
+    \end{array}
+\]
+
+Last, since $x \leq \sup A \leq \inf B \leq y, \ \forall x
+\in A, \ \forall y \in B$, defince $c$ as $\sup A (\in F)$, 
+then we prove that there exists $c \in F$ such that 
+$x \leq c \leq y$ for all $x \in A$ and $y \in B$.
+
+\item \textbf{(e) $\implies$ (a)} \\
+Let $A, B$ be nomempty subsets of $F$ with the property 
+that $x \leq y$ for every $x \in A$ and every $y \in B$,
+and there exists $c \in F$ such that $x \leq c \leq y$ for
+all $x \in A$ and $y \in B$. Since $c$ is an upper bound
+of $A$ and $c \leq y$ i.e., c is bounded by any other 
+upper bound. 
+To expand to any set, consider $B'$ as the set of every upper bound,
+and $A'$ as the set of those which are not upper bound.
+For every element $x' \in A'$ and $y' \in B'$, we obtain the relation for
+$x' \leq y'$. Since $A'$ is bounded above by $B'$, we could find $c' \in B'$
+such that $x' \leq c' \leq y'$ for all $x' \in A'$ and $y' \in B'$.
+Hence, $c'$ is the least upper bound, and we derive that if there exists the upper
+bound of the set, then the LUB property is true.
+\end{enumerate}
+As above, e prove that properties in the group A are 
+equivalent to each other. \\ [4mm]
+\textbf{(Group B)}
+
+\begin{enumerate}
+    \item \textbf{(b) $\implies$ (c)} \\
+Let $x, y \in F$ and $0 < y-x$. By the archimedean
+property, there exists $n \in \N \st n(y-x) > 1$.
+Moreover, there exists $m \in N \st nx < m < ny \implies
+x < \frac{m}{n}$ and $y > \frac{m}{n}$. Therefore, we can
+conclude that $\Q$ is in dense in $F$.
+\item \textbf{(c) $\implies$ (d)} \\
+    As $\Q$ is in dense in $F$, by (c), therefore, 
+    for any $x \in F$, $x>0$, there exists
+    $m,n \in \N \st 0 < \frac{1}{n} < \frac{m}{n} < x$
+
+\item \textbf{(d) $\implies$ (b)} \\
+    Let $x,y,z \in F, \ x,y,z > 0$ and $z = \frac{x}{y}$, 
+    by (d), there exists $n \in N$ such that
+    \[
+    0 < \frac{1}{n} < z = \frac{x}{y}
+    \implies nx > y.
+    \]
+    That is, (b) could be implied by (d).
+\end{enumerate}
+As above, we prove that properties in group B are equivalent
+to each other.
+
+Next, to prove that every property in group A implies any
+properties in group B but not the converse, we take 
+property (a) and property (b) as an example. Since the 
+properties in the same group are equivalent, it suffices to
+prove the condition between two groups by merely handling 
+the relation between property (a) and (b).
+
+\begin{enumerate}
+\item \textbf{(a) $\implies$ (b)} \\
+We use the fact that the set of positive integers $\N$
+is not bounded above, to prove this deduction.
+\begin{lemma} The set of positive integers $\N$ is not 
+    bounded above.
+\begin{proof}
+    Since $\N \subset \Q \subset F$ and $F$ holds the LUB
+    property i.e., $F$ has a least upper bound, 
+    by contradiction, assume $\N$ has a least upper bound
+    $a \in F$, where $n \leq a$ for all $n \in \N$.
+    Consequently, $a-1$ is not an upper bound for $\N$
+    as if it were, $a-1 < a$ implies that $a$ is not the
+    \textit{least} upper bound. Therefore, there exists
+    some integers $b$ such that $a-1 < b \implies a<b+1$.
+    However, it contradicts that $a$ is an upper bound of
+    $\N$.
+\end{proof}
+\end{lemma}
+Let $x, y \in F, \ x > 0$ and $n \in \N$. Assume by
+contradiction that there is no $n \in \N$ such that 
+$nx > y$ i.e., the archimedean property is satisfied, then
+it indicates $nx \leq y \iff n \leq \frac{y}{x}$ for all 
+$n \in N$. This statement is equivalent that the set of 
+positive integers $\N$ has an upper bound, and it 
+contradicts the lemma. Therefore, we prove that the LUB
+property implies the archimedean property.
+
+\item \textbf{(b) $\centernot\implies$ (a)} \\
+    Let $x \in \Q$ and $x > 0$, we can write $x$ as $\frac{n}{m}$ with $n \in \N$ and 
+    $m \neq 0, \ m \in \N$. Since $m \geq 1$, then we have $n = mx \geq x$ which
+    means $n+1 > x$. So the rational number has the archimedean property.
+    However, $\Q$ does not have the LUB property. For example, consider
+    $\{y \in \Q \  | y^2 = 2 \}$, which has an upper bound but no least upper bound.
+    Hence, we find a counter-example to prove that property (b) cannot imply
+    property (a).
+\end{enumerate}
+
+%p5
+\problem{Ordered Field}
+\subproblem{}
+To indicate that $\prec$ is an order making $Q[x]$ an
+ordered field, we need to prove
+\begin{enumerate}
+    \item $x+y \prec x+z$ if $x, y, z \in Q[x]$ and $y \prec z$.
+    \item $0 \prec xy$ if $x, y \in Q[x]$, $0 \prec x$ and 
+        $0 \prec y$.
+\end{enumerate}
+Let $x, y, z \in Q[x]$. For 1., assume that $x \prec y$, then
+\[
+    y - x \in K \implies y+z - (x+z) \in K \implies 
+    x+z \prec y+z.
+\]
+For 2., assume that $0 \prec x$ and $0 \prec y$, it implies
+\[
+    x-0 \in K, \ y-0 \in K \implies x,y \in K.
+\]
+Since $x,y \in K$, their corresponding uniqle polynomials,
+denote as $p^x, q^x, p^y, q^y$, satisfy that $p^x_n > 0, \ p^y_n > 0$ and $p^x_n\cdot p^y_n > 0 \ie xy \in K$. 
+Hence, $0 \prec xy$ holds.
+\subproblem{}
+If $Q[x]$ have the archimedean property, then for 
+$x, y \in Q[x]$ and $0 \prec x$, there exists a possitive 
+number $n$ such that $y \prec nx \iff nx - y \in K$. 
+However, when $m > n$, we could always find $y$ with
+the positive leading coefficient such that
+$nx - y \notin K$. Hence, $Q[x]$ does not have the 
+archimedean property.
+
+Let $f \in Q[x]$ with the positive leading coefficient
+and $f = (n+1)x$ where $n \in \N$, then $\forall n \in \N,
+\ \forall x>0,$
+\[
+    nx < f = nx+n \implies f \text{ is an upper bound of }nx.
+\]
+Similarly, let $g \in Q[x]$ with the positive leading 
+coefficient and $g = (n-1)x$ where $n \in \N$, then 
+$\forall n \in \N, \ \forall x > 0$,
+\[
+    nx > g = nx-x \implies g \text{ is a lower bound of }nx.
+\]
+Hence, it suffices to say that $\N$ is bounded in $Q[x]$.
+
+%p6
+\problem{Nested Interval Property}
+\subproblem{}
+Since $I_n=[a_n, b_n]$ is a nested sequence of closed intervals, we obtain that
+\[
+    \forall n,m \in \N, \ a_n \leq a_{\max \{n,m\}} \leq b_{\max \{n,m\}} \leq b_n.
+\]
+In other words, for every $m \in \N$, $b_m$ is a upper bound of $a_n \ (n \in \N)$.
+Let $c = \lim\limits_{n\to \infty}a_n$, and $b_m \ (m \in \N)$ is an upper bound
+of $a_n \ (n \in \N)$, we have $c \leq b_m \ \forall m \in \N$;
+also, $a_n \leq c \ \forall n \in \N$. Therefore, we find $c \in \cap_{n=1}^\infty I_n
+\ \ie \cap_{n=1}^\infty I_n \neq \emptyset$.
+
+\subproblem{}
+Let $A = \{a_n\}(n \in \N)$ and $B = \{b_n\}(n \in N)$, 
+$a_n$ is a strictly increasing sequence, $b_n$ is a strictly
+decreasing sequence, and $b_n(n \in \N)$ is an upper bound
+of $A$. Since $a_n$ and $b_n$ are bounded, $a_n$ and $b_n$ 
+converge to some limit points $\alpha, \beta$ respectively,
+and $\alpha \leq \beta$. 
+For any arbitrarily small $\varepsilon > 0$ and 
+$\lvert I_k \rvert = b_k - a_k$, we have 
+\[
+    \lim_{k\to \infty} \lvert I_k \rvert
+    = \lim_{k\to \infty} b_k - a_k
+    = \lim_{k\to \infty}b_k - \lim_{k\to \infty}a_k
+    = \beta - \alpha = 0
+    \implies \alpha = \beta.
+\]
+Therefore, the point common to all the intervals
+$\cap_{n=1}^\infty I_n$ is unique.
+
+\subproblem{}
+If the nested sets $I_n$ are open intervals, their intersection may sometimes be
+an emptyset. For example, let the nested set $I_n = (0, \frac{1}{n})$, the intersection
+of $I_n$ is an emptyset.
+
+%\end{CJK*}
+\end{document}
+
