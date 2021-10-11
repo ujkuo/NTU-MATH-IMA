@@ -1,0 +1,594 @@
+\documentclass[a4paper]{article}
+%The main tex begins from line 188
+\usepackage[top = 2.5cm, bottom = 2.5cm, left = 2cm, right = 2cm]{geometry} 
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{etoolbox}
+\usepackage{indentfirst}
+\usepackage{tabularx}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{authblk}
+\usepackage[calcwidth]{titlesec}
+\usepackage{bookmark}
+\usepackage[capitalize]{cleveref}
+\usepackage{array}
+\usepackage[english]{babel}
+\usepackage{enumitem}
+%\usepackage[utf8]{inputenc}
+%\usepackage{CJKutf8}
+\usepackage{xeCJK}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\makeatletter
+% Macros for setting basic info
+\gdef\@uni{National Taiwan University}
+\gdef\@department{Information Management}
+\gdef\@me{Yu-Chieh Kuo}
+
+\newcommand{\course}[2][]{
+    \ifstrempty{#1}{
+        \gdef\shortcourse{#2}
+    }{
+        \gdef\shortcourse{#1}
+    }
+    \gdef\@course{#2}
+}
+\newcommand{\teacher}[1]{\gdef\@teacher{#1}}
+\newcommand{\semester}[1]{\gdef\@semester{#1}}
+\newcommand{\uni}[1]{\gdef\@uni{#1}}
+\newcommand{\department}[1]{\gdef\@department{#1}}
+\newcommand{\student}[3][]{
+    \ifstrempty{#1}{
+        \author{\textbf{#2} \textbf{#3}}
+    }{
+        \author[#1]{\textbf{#2} \textbf{#3}}
+    }
+}
+\newcommand{\assignment}[2][Homework]{
+    \ifstrempty{#2}{
+        \gdef\@assignment{#1}
+    }{
+        \gdef\@assignment{#1 #2}
+    }
+}
+
+% page style for title page
+\fancypagestyle{title}{
+    \fancyhf{}
+    \renewcommand{\headrulewidth}{0pt}
+    \cfoot{\footnotesize Page {\thepage} of \pageref{LastPage}} 
+}
+\newcommand{\ujtitle}{
+    \thispagestyle{title}
+    \noindent\begin{tabularx}{\linewidth}{Xr} % This is a simple tabular environment to align your text nicely 
+    {\large \bf{\@course}} \\
+    National Taiwan University, \@semester  \\
+    \bottomrule % \hline produces horizontal lines.
+    \end{tabularx}
+    
+    \vspace*{0.3cm}
+
+    \begin{center}
+        {\huge\bf\textsc{\@assignment}}\\[3mm]
+        {\@author}
+    \end{center}
+
+    \vspace*{0.3cm}
+}
+\newcommand{\mymaketitle}{
+    \thispagestyle{title}
+    \vspace*{-15mm}
+    \noindent\begin{tabularx}{\linewidth}{Xr}
+                                & \textsl{National Taiwan University} \\
+        \large\textbf{\@semester,} & \textsl{Department of \@department}         \\
+        \large\textbf{\@course} & \textsl{Prof. \@teacher}\Bstrut\\
+        \bottomrule
+    \end{tabularx}
+
+    \vspace*{10mm}
+
+    \begin{center}
+        {\huge\textsc{\@assignment{}}}\\[6mm]
+        {\@author}
+    \end{center}
+
+    \vspace*{1cm}
+}
+
+% page style for contents
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{13.6pt}
+\lhead{\small {\@course}: {\@assignment}}
+\rhead{\small {\@me}}
+\cfoot{\small {Page {\thepage} of \pageref{LastPage}}} 
+
+% Style for part, section, and subsection
+% Part
+\titleclass{\part}{straight}
+\titleformat{\part}
+[display]
+{\centering\bfseries}
+{\setlength{\titlewidth}{1.5\titlewidth}\large\titleline*[c]{\titlerule[.6pt]}\vspace{3pt}\MakeUppercase{\partname} \thepart}
+{0pt}
+{\LARGE\itshape}
+[{
+    \setlength{\titlewidth}{1.5\titlewidth}
+    \titleline*[c]{\titlerule*{\mdseries-}}
+}]
+\titlespacing*{\part}{0pt}{20pt}{20pt}[0pt]
+
+% Problem and subproblem
+\setcounter{secnumdepth}{0}
+\newcounter{problem}
+\newcounter{subproblem}[problem]
+\newbool{appendix}
+\gdef\problemName{Problem}
+\newcommand{\problem}[2][]{
+    \setcounter{equation}{0}
+    \ifstrempty{#1}{
+        \stepcounter{problem}
+    }{
+        \setcounter{problem}{#1}
+    }
+    \ifstrempty{#2}{
+        \ifbool{appendix}{
+            \section{\hspace{-5mm}\problemName{} \Alph{problem}.}
+        }{
+            \section{\hspace{-5mm}\problemName{} \arabic{problem}}
+        }
+    }{
+        \ifbool{appendix}{
+            \section{\hspace{-5mm}\problemName{} \Alpa{problem}: #2}
+        }{
+            \section{\hspace{-5mm}\problemName{} \arabic{problem}: #2}
+        }
+    }
+}
+\newcommand{\subproblem}[2][]{
+    \setcounter{equation}{0}
+    \ifstrempty{#1}{
+        \stepcounter{subproblem}
+    }{
+        \setcounter{subproblem}{#1}
+    }
+    \ifstrempty{#2}{
+        \ifbool{appendix}{
+            \section{\hspace{-2mm}\Alph{problem}.\arabic{subproblem}}
+        }{
+            \section{\hspace{-2mm}\arabic{problem}.(\alph{subproblem})}
+        }
+    }{
+        \ifbool{appendix}{
+            \section{\hspace{-2mm}\Alph{problem}.\arabic{subproblem}. #2}
+        }{
+            \section{\hspace{-2mm}\arabic{problem}.(\alph{subproblem}) #2}
+        }
+    }
+}
+
+% Appendix
+\newcommand{\myAppendix}{
+    \setcounter{section}{0}
+    \renewcommand{\sectionname}{Appendix}
+    \renewcommand{\thesection}{\Alph{section}}
+    \renewcommand{\thesubsection}{\Alph{section}.\arabic{subsection}}
+    \renewcommand{\perhapscolon}[1]{\perhapsdot{##1}}
+}
+
+% Bookmarks
+\hypersetup{
+    bookmarksnumbered=true
+}
+
+% Reference nome for task and subtask
+\crefname{section}{\sectionname}{\sectionnamepl}
+
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \everymath{\displaystyle}
+
+% commands for spacing
+\newcommand{\Tstrut}{\rule{0pt}{4mm}}         % = `top' strut
+\newcommand{\Bstrut}{\rule[-2mm]{0mm}{0mm}}   % = `bottom' strut
+
+% Paired Delimiters {}, (), []
+\providecommand\given{} % so it exists
+\newcommand\SetSymbol[1][]{
+   \nonscript\,#1\vert \allowbreak \nonscript\,\mathopen{}}
+\DeclarePairedDelimiterX\Set[1]{\lbrace}{\rbrace}%
+ { \renewcommand\given{\SetSymbol[\delimsize]} #1 }
+\DeclarePairedDelimiterX{\Bkt}[1]{[}{]}{#1}
+\DeclarePairedDelimiterX{\Paren}[1]{(}{)}{#1}
+\DeclarePairedDelimiterX{\Abs}[1]{\lvert}{\rvert}{#1}
+\newcommand{\PR}[1]{\Pr\Bkt*{#1}}
+\newcommand{\overbar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
+
+\newcolumntype{D}{>{$(}l<{)$}}
+\newcolumntype{R}{>{\displaystyle}r}
+\newcolumntype{C}{>{\displaystyle}c}
+\newcolumntype{L}{>{\displaystyle}l}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsfonts}
+\usepackage{amsthm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Declare operator and useful math command
+\DeclareMathOperator{\EOp}{\mathbb{E}}
+\newcommand{\E}[1]{\ensuremath{\EOp\Bkt*{#1}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\ve}{\varepsilon}
+\newcommand{\ie}{\text{ i.e., }}
+\newcommand{\st}{\text{ s.t.  }}
+\newcommand{\p}[1]{\mathcal{P}(#1)}
+% Declare delimiter
+\DeclareMathDelimiter{\lVert}
+  {\mathopen}{symbols}{"6B}{largesymbols}{"0D}
+\DeclareMathDelimiter{\rVert}
+  {\mathclose}{symbols}{"6B}{largesymbols}{"0D}
+  \DeclarePairedDelimiter\norm{\lVert}{\rVert}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\theoremstyle{plain}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setCJKmainfont{思源宋體 TW}
+%\setmainfont{思源宋體 TW}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+%\begin{CJK*}{UTF8}{bsmi}
+\course{Introduction to Mathematical Analysis (I)}
+\semester{Fall 2021}
+%\teacher{}
+%\department{Math}
+\assignment{2}
+\date{\today}
+\student[$\dagger$]{Yu-Chieh Kuo}{B07611039}
+\affil[$\dagger$]{Department of Information Management, National Taiwan University}
+\ujtitle
+
+% p1
+\problem{}
+\subproblem{}
+Consider the set of all alebraic number $A$ collect all roots of polynomials
+with rational coefficients, which mean $A$ is the union of all roots of 
+polynomials. For every set with polynomials, there are finite numbers of 
+roots, therefore, the union of all polynimials and the union of all roots
+are countable as well. That is, the union of all countable sets, as well as 
+the set of all algebraic number, $A$, is countable.
+
+\subproblem{}
+Let $x = \sqrt{2} + \sqrt{3} \iff x - \sqrt{2} - \sqrt{3} = 0$. Therefore,
+we could derive that $x = \sqrt{2} + \sqrt{3}$ is a root of $x^4 - 10x^2 + 1 = 0$.
+Hence, $\sqrt{2} + \sqrt{3}$ is algebraic by definition.
+
+% p2
+\problem{}
+Let $A = \{a_1, a_2, \dots\}$ be an infinite set,
+$B = A - \{a_1\} = \{a_2, a_3, \dots\} \subset A$.
+Define an one-to-one mapping function
+\[
+\begin{aligned}[t]
+    f:A & \longrightarrow B \\
+    a_i & \longmapsto a_{i+1}.
+\end{aligned}
+\]
+
+By Equivalent Theorem, there exists a one-to-one
+function mapping from $B$ onto $A$, we have $A \sim B \ie 
+\text{card } A = \text{card } B$.
+
+% p3
+\problem{}
+Assuming $S$ and $\R$ have the same cardinality, let $\Phi$ be a one-to-one function
+from $\R$ onto $S$. Let $a \in \R$, $g_a(\cdot) = \Phi(a)$ be the real-valued
+functions in $S$ which corresponds to $a$ in $\R$. Now define $h \in S$ by
+$h(x) = 1 + g_x(x), \ x \in \R$. Since $S$ and $\R$ have the same cardinality,
+we could find $b \in \R$ such that
+\[
+    h(b) = \Phi(b) = g_b(b) = 1 + g_b(b),
+\]
+which leads to the contradiction. Hence, $S$ and $\R$ have the different
+cardinality i.e., $S$ and $\R$ are not equivalent.
+
+% p4
+\problem{}
+Let $S_k = \{ x \in [0,1] : \lvert f(x)\rvert \geq \frac{1}{k}, \ k = 1,2,3,\dots \}$,
+we claim that $S_k$ is finite. Asuume it's not finite, we can choose
+$n = kM + 1$ such that $\lvert f(x_1)\rvert + \cdots + \lvert f(x_n)\rvert \geq M$,
+which leads to a contradiction.
+Next, we would like to show that $U = \bigcup\limits_{k=1}^{\infty}S_k$.
+\begin{itemize}
+    \item ($\bigcup\limits_{k=1}^{\infty}S_k \subseteq U$):
+        Suppose $x \in \bigcup\limits_{k=1}^{\infty}S_k$, then there exists
+        a $k_x$ such that $x \in S_{k_x} \ie \lvert f(x)\rvert \geq \frac{1}{k_x}$.
+        It indicates that $f(x) \neq 0 \implies \bigcup\limits_{k=1}^{\infty}S_k
+        \subseteq U$.
+    \item ($U \subseteq \bigcup\limits_{k=1}^{\infty}S_k)$:
+        Suppose $x \in U$, then there exists $q \neq 0$ such that
+        $\lvert f(x) \rvert = q \neq 0$.
+        By the archimedean property, we know that there exists $k'
+        \geq \frac{1}{q} \ie q \geq \frac{1}{k'}$.
+        Therefore, we could derive that
+        $x \in S_{k'} \in \bigcup\limits_{k=1}^{\infty}S_k \implies
+        U \in \bigcup\limits_{k=1}^{\infty}S_k$.
+\end{itemize}
+Due to the proofs above, we claim that $U = \bigcup\limits_{k=1}^{\infty}S_k$.
+Finally, by the \textbf{Theorem 2.20} in Rudin, since $\N$ is at most countable,
+and for every $k \in \N$, $S_k$ is at most countable, 
+$U = \bigcup\limits_{k=1}^{\infty}S_k$ is at most countable as well.
+
+% p5
+\problem{}
+\subproblem{}
+Let $A = \{0, 1, \frac{1}{2}, \frac{1}{3},\dots \}$ and $B =\{ \frac{1}{2}, \frac{1}{3},
+\dots \}$. Define
+\[
+    f(x) = \begin{cases}
+        \frac{1}{2} & \text{if } x = 0 \\
+        \frac{1}{n+2} & \text{if } x = \frac{1}{n}, \ n = 1,2,3,\dots.
+    \end{cases}
+\]
+Clearly, $f$ is a one-to-one mapping from the set $A$ onto set $B$.
+
+To extend this mapping to a function $f : [0,1] \to (0,1)$ that is one-to-one
+and onto, we re-define $f$ as
+\[
+    f(x) = \begin{cases}
+        \frac{1}{2} & \text{if } x = 0 \\
+        \frac{1}{n+2} & \text{if } x = \frac{1}{n}, \ n = 1,2,3,\dots \\
+        x & \text{if } x \in [0,1] \setminus A.
+    \end{cases}
+\]
+Based on the definition above, we could find that $f$ is a one-to-one
+mapping from $[0,1]$ onto $(0,1)$. Thus, $[0,1]$ and $(0,1)$
+have the same cardinality.
+
+\subproblem{}
+Divide $[0, \infty)$ into two intervals and follow the concept of 5.(a).
+Let $A = \{0, 1, 2, \dots\} = 0 \cup \mathbb{Z}_+$ and $B = [0,\infty) \setminus A$, we define
+\[
+    f(x) = \begin{cases}
+        x+1 & \text{if } x \in A \\
+        x & \text{if } x \in (0,\infty) \setminus \mathbb{Z}_+,
+    \end{cases}
+\]
+where $f$ is a one-to-one mapping from $[0, \infty)$ onto $(0, \infty)$.
+Thus, we conclude that $[0, \infty)$ and $(0, \infty)$ have the same cardinality.
+
+To conclude that all intervals in the extended real number system have the
+same cardinality, we need to prove that $(a,b) \sim [a,b]$ for all $a, b \in \R$.
+From the previous proof, we need to prove that $(-\infty,0]$ and $(-\infty,0)$
+have the same cardinality to extend the system to all real number. Based on
+the same idea, define a function $g: (-\infty,0] \to (-\infty,0)$ as
+\[
+    g(x) = \begin{cases}
+        x-1 & \text{if } x \in 0 \cup \mathbb{Z}_- \\
+        x & \text{if } x \in (-\infty, 0) \setminus \mathbb{Z}_-,
+    \end{cases}
+\]
+and we can clearly conclude that $g$ is a one-to-one mapping from $(-\infty, 0]$
+onto $(-\infty, 0)$. As a result, we extend the system for all real numbers
+i.e., for every open, half-open, and closed intervals with real number boundaries,
+they have the same cardinality.
+
+\subproblem{}
+Since the proofs between $(0,1] \sim (0,1] \times (0,1]$ and $(0,1) \sim (0,1) \times (0,1)$ are equivalent,
+to prove that $(0,1] \sim (0,1] \times (0,1]$, we could construct two
+one-to-one functions $f:(0,1) \to (0,1) \times (0,1)$
+and $g: (0,1) \times (0,1) \to (0,1)$. If we could find such $f$ and $g$,
+then we can say that $(0,1) \subset \R$ and $(0,1) \times (0,1) \subset \R^2$
+have the same cardinality i.e.,
+$(0,1] \subset \R$ and $(0,1] \times (0,1] \subset \R^2$
+have the same cardinality as well.
+Define
+\[
+\begin{aligned}[t]
+    f:(0,1) & \longrightarrow (0,1) \times (0,1) \\
+    x & \longmapsto (x, \frac{1}{2}).
+\end{aligned}
+\]
+Clearly $f$ is a one-to-one injection from $(0,1)$ to $(0,1) \times (0,1)$.
+
+Next, define
+\[
+\begin{aligned}[t]
+    g: (0,1] \times (0,1) & \longrightarrow (0,1) \\
+    (x,y) = (0.x_1x_2\dots, 0.y_1y_2\dots) & \longmapsto 0.x_1y_1x_2y_2\dots.
+\end{aligned}
+\]
+Note that the decimal representation is unique i.e., we don't say that 
+$0.1999\dots = 0.2$. Hence, $g$ is one-to-one mapping from $(0,1)$ to $(0,1) \times (0,1)$.
+With the injection from both sides, we could conclude that $(0,1) \sim (0,1) \times (0,1)$
+i.e., $(0,1] \subset \R$ and $(0,1] \times (0,1] \subset \R^2$ have the
+same cardinality.
+
+
+
+% p6
+\problem{}
+\subproblem{}
+Let $f: S \to \mathcal{P}(S)$ and consider the set $A:\{ x \in S \ | \ x \notin f(x) \}$.
+Assume that $f$ is surjective, then there exists $y \in S$ such that $f(y) = A$.
+However, $y \in B \iff y \notin f(y) = B$, which leads to a contradictory and implies
+that $f$ is not surjective. On the other hands, if we define
+$g : S \to \mathcal{P}(S)$ is an injective mapping with $x \mapsto {x}$, then
+$g$ is a possible mapping from $S$ to $\mathcal{P}(S)$. As a result,
+we must have the cardinality of $S$ is less than the cardinality of $\mathcal{P}(S)$.
+
+\subproblem{}
+Let $S$ be the set of all sets, and $\mathcal{P}(S)$ be the set of its all subsets.
+Since $S$ is "the set of all sets", it must satisfy that $\lvert S \rvert
+\geq \mathcal{P}(S)$, which contradicts to the Cantor's Theorem. Consequently,
+"the set of all sets" makes no sense at all.
+
+% p7
+\problem{}
+\subproblem{}
+Given by the definition of $g$, consider its inverse function $g^{-1}: A' \to B'$
+such that $g^{-1}(g(x)) = x \ \forall x \in B'$. Next, we would like to check
+whether $g^{-1}$ is one-to-one and onto.
+\begin{enumerate}
+    \item One-to-one:
+        For arbitraty $g(x), g(y) \in A'$, we have
+        \[
+            \begin{array}{RL}
+                & g^{-1}(g(x)) = g^{-1}(g(y)) \\
+                \implies & x = y \\
+                \implies & g(x) = g(y) \\
+                \implies & g^{-1} \text{ is one-to-one.}
+            \end{array}
+        \]
+    \item Onto:
+        For any $b \in B'$, since $g$ is onto, there exists $a \in A'$
+        such that $g(b) = a$. Moreover,
+        \[
+            \begin{array}{RL}
+                & g(b) = a \\
+                \implies & g^{-1}(g(b)) = g^{-1}(a) \\
+                \implies & b = g^{-1}(a) \\
+                \implies & g^{-1} \text{ is onto.}
+            \end{array}
+        \]
+\end{enumerate}
+Define $h: X \to Y$ such that
+\[
+    h(x) = \begin{cases}
+        f(x) & \text{if } x \in A \\
+        g^{-1}(x) & \text{if } x \in A'.
+    \end{cases}
+\]
+Since $f$ and $g^{-1}$ are one-to-one and onto mapping, it leads to
+$h: X \to Y$ is also one-to-one and onte, which implies $X \sim Y$.
+
+\subproblem{}
+For $A_1 = \emptyset$, it shows that $g(Y) = X$. Consequently, we could
+take $g^{-1}$ as a one-to-one and onto function and conclude $X \sim Y$.
+
+For $A_1 \neq \emptyset$, by induction, consider the case of $n=1$ and $n = 2$,
+\[
+    \begin{array}{RL}
+        & x \in A_1 \\
+        \implies & x \notin g(Y) \\
+        \implies & x \notin g(f(A_1)) \quad \because f(A_1) \subseteq Y \\
+        \implies & x \notin A_2.
+    \end{array}
+\]
+Here it shows that $A_1, A_2$ are disjoint pairwise.
+
+By induction hypothesis, suppose that in the case of $n = k$, $A_k$ is disjoint
+from $A_1, A_2,\dots,A_{k-1}$. Here we define $x' = g(f(x))$ for the future
+use, and it leads to
+\[
+    \begin{array}{RL}
+        & x \in A_k \\
+        \iff & g(f(x)) \in g(f(A_k)) \\
+        \iff & x' \in g(f(A_k)) \\
+        \iff & x' \in A_{k+1}.
+    \end{array}
+\]
+And for $x' \in A_{k+1}$, we have that
+\[
+    \begin{array}{RL}
+        & x' \in A_{k+1} \\
+        \iff & x \in A_k \\
+        \iff & x \notin A_1, x \notin A_2, \dots, x \notin A_{k-1} \\
+        \iff & x' \notin A_2, x' \notin A_3, \dots, x' \notin A_k.
+    \end{array}
+\]
+For the case of $n = k+1$, we have
+\[
+    \begin{array}{RL}
+        & x' \in A_{k+1} \\
+        \implies & x' \in g(f(A_k)) \\
+        \implies & x' \in g(Y) \quad \because f(A_k) \subseteq Y \\
+        \implies & x' \notin A_1.
+        
+    \end{array}
+\]
+Consequently, for the case of $x' \in A_{k+1}$, it implies that 
+$x'$ doesn't belong to $A_1, A_2, \dots, A_k$. Hence, we prove that 
+$\{ A_n : n \in \N \}$ is a pairwise disjoint collection of subsets of $X$,
+and $\{ f(A_n) : n \in \N \}$ is a similar collection in $Y$ since $f$
+is a one-to-one function.
+
+\subproblem{}
+Take any $b \in B$, there exists $n \in \N$ such that $b \in f(A_n) \subset B$,
+where $n \in \N$.
+By the definition of $A_n$ and $f(A_n)$ for $n \in \N$, there exists $a \in A_n \subset A$
+,$n \in \N$, such that $f(a) = b$, which indicates that $f$ maps $A$ onto $B$.
+
+\subproblem{}
+Take any $a \in A'$, we have 
+\[
+    \begin{array}{RL}
+        & a \in A' \\
+        \implies & a \notin A \\
+        \implies & a \notin A_1 \quad \because A_1 \subset A \\
+        \implies & a \in g(Y) \\
+        \implies & \exists \ b \in Y \st g(b) = a.
+    \end{array}
+\]
+Suppose that $b \notin B' \ie b \in B$, we have $b \in f(A_n)$ for some 
+$n \in \N$. Since $f$ is a onto mapping, there exists $a' \in A_n$
+such that $f(a') = b$. But here 
+$a = g(b) = g(f(a')) \in g(f(A_n)) = A_{n+1} \subset A$ for $n \in \N$,
+which is a contradiction. Consequently $b$ should be in $B'$. Therefore
+we prove that $g$ maps $B'$ onto $A'$ i.e., for any $a \in A'$, there
+exists $b \in B'$ such that $g(b) = a$.
+
+\subproblem{}
+Define $A_1 = X \setminus g(Y) = X \setminus [0,\frac{1}{2}] = (\frac{1}{2},1]$.
+By induction, define $A_2, A_3, \dots, A_n(n \in \N)$ as
+\[
+    \begin{array}{RRCLL}
+        A_2 & = & g(f(A_1)) & = & (\frac{1}{8}, \frac{1}{4}] \\ [4mm]
+        A_3 & = & g(f(A_2)) & = & \left(\frac{1}{32},  \frac{1}{16}\right] \\
+        & &                   \vdots & & \\
+        A_n & = & g(f(A_{n-1})) & = & \left(\frac{1}{2\cdot r^{n-1}}, \frac{1}{4^{n-1}}
+        \right],
+    \end{array}
+\]
+and $A = \bigcup_{n=1}^{\infty}A_n = \bigcup_{n=1}^{\infty}\left(\frac{1}{2\cdot4^{n-1}},
+\frac{1}{4^{n-1}}\right]$. Therefore, we could define $h:[0,1] \to [0,1]$ as 
+\[
+    h(x) = \begin{cases}
+        \frac{x}{2} & \text{if } x \in \bigcup_{n=1}^\infty\left(\frac{1}{2\cdot4^{n-1}},
+        \frac{1}{4^{n-1}}\right] \\
+        2x & \text{otherwise.}
+    \end{cases}
+\]
+
+% p8
+\problem{}
+\subproblem{}
+For all $t \in T$, we have the preimage $f^{-1}(t) \neq \emptyset \subset S$.
+By Axiom of Choice, there exists a function $U$ such that $U(t) \in f^{-1}(t)$,
+where $U$ is one-to-one.
+
+\subproblem{}
+By the fact deriving from 8.(a), we know that there exists functions
+$U: S \to T$ and $V: T \to S$, where $U$ and $V$ are one-to-one.
+By equivalent theorem, we conclude that $S \sim T$ i.e., $S$ and $T$
+have the same cardinality.
+
+%\end{CJK*}
+\end{document}
+
