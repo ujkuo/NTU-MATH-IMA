@@ -276,10 +276,10 @@ Therefore, it suffices to say $b^r = \sup B(r) \ \forall r \in \Q$.
 Let 
 \[
     \begin{array}{RCL}
-        B(x) & = & \{ b^r | r \in \Q, \ r \leq x \} \\
-        B(y) & = & \{ b^s | s \in \Q, \ s \leq y \} \\
-        B(x+y) & = & \{ b^t | t \in \Q, \ t \leq x + y\} \\
-               & = & \{b^rb^s | r, s \in \Q, \ r \leq x,
+        B(x) & = & \{ b^r \ | \ r \in \Q, \ r \leq x \} \\
+        B(y) & = & \{ b^s \ | \ s \in \Q, \ s \leq y \} \\
+        B(x+y) & = & \{ b^t \ | \ t \in \Q, \ t \leq x + y\} \\
+               & = & \{b^rb^s \ | \ r, s \in \Q, \ r \leq x,
                \ s \leq y \},
     \end{array}
 \]
@@ -313,7 +313,7 @@ i.e., $b^xb^y = b^{x+y}$ for all real $x$ and $y$.
 \begin{enumerate}[label = (\alph*)]
 \item 
 \[
-    \begin{array}{LLL}
+    \begin{array}{RRL}
     b^n - 1 & = b^n - 1^ n & = (b-1)\underbrace{(b^{n-1}) + b^{n-2} + \cdots + 1}_{n} \\
         & & \geq (b-1)\underbrace{(1 + 1 + \cdots + 1)}_{n} \\
         & &= n(b-1).
@@ -325,7 +325,7 @@ i.e., $b^xb^y = b^{x+y}$ for all real $x$ and $y$.
         n > \frac{b-1}{t-1} \implies n(t-1) > b-1 
         \geq n(b^{\frac{1}{n}} - 1),
     \]
-    where $n,\, b,\, t$ are positive, hence, $t > b^{\frac{1}{n}}.$
+    where $n,\, b,\, t$ are positive. Hence, $t > b^{\frac{1}{n}}$.
 \item
     Let $t = y\cdot b^{-w} > 1$. By (c), we have
 \[
@@ -481,7 +481,7 @@ conclude that $\Q$ is in dense in $F$.
 
 \item \textbf{(d) $\implies$ (b)} \\
     Let $x,y,z \in F, \ x,y,z > 0$ and $z = \frac{x}{y}$, 
-    by (d), there exists $n \in N$ such that
+    by (d), there exists $n \in \N$ such that
     \[
     0 < \frac{1}{n} < z = \frac{x}{y}
     \implies nx > y.
@@ -504,7 +504,7 @@ We use the fact that the set of positive integers $\N$
 is not bounded above, to prove this deduction.
 \begin{lemma} The set of positive integers $\N$ is not 
     bounded above.
-\begin{proof}
+    \footnote { \textit{Proof. }
     Since $\N \subset \Q \subset F$ and $F$ holds the LUB
     property i.e., $F$ has a least upper bound, 
     by contradiction, assume $\N$ has a least upper bound
@@ -514,14 +514,14 @@ is not bounded above, to prove this deduction.
     \textit{least} upper bound. Therefore, there exists
     some integers $b$ such that $a-1 < b \implies a<b+1$.
     However, it contradicts that $a$ is an upper bound of
-    $\N$.
-\end{proof}
+    $\N$. \hfill $\square$
+}
 \end{lemma}
 Let $x, y \in F, \ x > 0$ and $n \in \N$. Assume by
 contradiction that there is no $n \in \N$ such that 
 $nx > y$ i.e., the archimedean property is satisfied, then
 it indicates $nx \leq y \iff n \leq \frac{y}{x}$ for all 
-$n \in N$. This statement is equivalent that the set of 
+$n \in \N$. This statement is equivalent that the set of 
 positive integers $\N$ has an upper bound, and it 
 contradicts the lemma. Therefore, we prove that the LUB
 property implies the archimedean property.
@@ -595,7 +595,7 @@ also, $a_n \leq c \ \forall n \in \N$. Therefore, we find $c \in \cap_{n=1}^\inf
 \ \ie \cap_{n=1}^\infty I_n \neq \emptyset$.
 
 \subproblem{}
-Let $A = \{a_n\}(n \in \N)$ and $B = \{b_n\}(n \in N)$, 
+Let $A = \{a_n\}(n \in \N)$ and $B = \{b_n\}(n \in \N)$, 
 $a_n$ is a strictly increasing sequence, $b_n$ is a strictly
 decreasing sequence, and $b_n(n \in \N)$ is an upper bound
 of $A$. Since $a_n$ and $b_n$ are bounded, $a_n$ and $b_n$ 
