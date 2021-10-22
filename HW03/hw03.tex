@@ -1,0 +1,493 @@
+\documentclass[a4paper]{article}
+%The main tex begins from line 188
+\usepackage[top = 2.5cm, bottom = 2.5cm, left = 2cm, right = 2cm]{geometry} 
+\usepackage{amsmath} % For the usage of \because and \therefore
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{etoolbox}
+\usepackage{indentfirst}
+\usepackage{tabularx}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{authblk}
+\usepackage[calcwidth]{titlesec}
+\usepackage{bookmark}
+\usepackage[capitalize]{cleveref}
+\usepackage{array}
+\usepackage[english]{babel}
+\usepackage{enumitem} % For the usage of labeling in enumerate and itemize
+%\usepackage[utf8]{inputenc}
+%\usepackage{CJKutf8}
+\usepackage{xeCJK}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\makeatletter
+% Macros for setting basic info
+\gdef\@uni{National Taiwan University}
+\gdef\@department{Information Management}
+\gdef\@me{Yu-Chieh Kuo}
+
+\newcommand{\course}[2][]{
+    \ifstrempty{#1}{
+        \gdef\shortcourse{#2}
+    }{
+        \gdef\shortcourse{#1}
+    }
+    \gdef\@course{#2}
+}
+\newcommand{\teacher}[1]{\gdef\@teacher{#1}}
+\newcommand{\semester}[1]{\gdef\@semester{#1}}
+\newcommand{\uni}[1]{\gdef\@uni{#1}}
+\newcommand{\department}[1]{\gdef\@department{#1}}
+\newcommand{\student}[3][]{
+    \ifstrempty{#1}{
+        \author{\textbf{#2} \textbf{#3}}
+    }{
+        \author[#1]{\textbf{#2} \textbf{#3}}
+    }
+}
+\newcommand{\assignment}[2][Homework]{
+    \ifstrempty{#2}{
+        \gdef\@assignment{#1}
+    }{
+        \gdef\@assignment{#1 #2}
+    }
+}
+
+% page style for title page
+\fancypagestyle{title}{
+    \fancyhf{}
+    \renewcommand{\headrulewidth}{0pt}
+    \cfoot{\footnotesize Page {\thepage} of \pageref{LastPage}} 
+}
+\newcommand{\ujtitle}{
+    \thispagestyle{title}
+    \noindent\begin{tabularx}{\linewidth}{Xr} % This is a simple tabular environment to align your text nicely 
+    {\large \bf{\@course}} \\
+    National Taiwan University, \@semester  \\
+    \bottomrule % \hline produces horizontal lines.
+    \end{tabularx}
+    
+    \vspace*{0.3cm}
+
+    \begin{center}
+        {\huge\bf\textsc{\@assignment}}\\[3mm]
+        {\@author}
+    \end{center}
+
+    \vspace*{0.3cm}
+}
+\newcommand{\mymaketitle}{
+    \thispagestyle{title}
+    \vspace*{-15mm}
+    \noindent\begin{tabularx}{\linewidth}{Xr}
+                                & \textsl{National Taiwan University} \\
+        \large\textbf{\@semester,} & \textsl{Department of \@department}         \\
+        \large\textbf{\@course} & \textsl{Prof. \@teacher}\Bstrut\\
+        \bottomrule
+    \end{tabularx}
+
+    \vspace*{10mm}
+
+    \begin{center}
+        {\huge\textsc{\@assignment{}}}\\[6mm]
+        {\@author}
+    \end{center}
+
+    \vspace*{1cm}
+}
+
+% page style for contents
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{13.6pt}
+\lhead{\small {\@course}: {\@assignment}}
+\rhead{\small {\@me}}
+\cfoot{\small {Page {\thepage} of \pageref{LastPage}}} 
+
+% Style for part, section, and subsection
+% Part
+\titleclass{\part}{straight}
+\titleformat{\part}
+[display]
+{\centering\bfseries}
+{\setlength{\titlewidth}{1.5\titlewidth}\large\titleline*[c]{\titlerule[.6pt]}\vspace{3pt}\MakeUppercase{\partname} \thepart}
+{0pt}
+{\LARGE\itshape}
+[{
+    \setlength{\titlewidth}{1.5\titlewidth}
+    \titleline*[c]{\titlerule*{\mdseries-}}
+}]
+\titlespacing*{\part}{0pt}{20pt}{20pt}[0pt]
+
+% Problem and subproblem
+\setcounter{secnumdepth}{0}
+\newcounter{problem}
+\newcounter{subproblem}[problem]
+\newbool{appendix}
+\gdef\problemName{Problem}
+\newcommand{\problem}[2][]{
+    \setcounter{equation}{0}
+    \ifstrempty{#1}{
+        \stepcounter{problem}
+    }{
+        \setcounter{problem}{#1}
+    }
+    \ifstrempty{#2}{
+        \ifbool{appendix}{
+            \section{\hspace{-5mm}\problemName{} \Alph{problem}.}
+        }{
+            \section{\hspace{-5mm}\problemName{} \arabic{problem}}
+        }
+    }{
+        \ifbool{appendix}{
+            \section{\hspace{-5mm}\problemName{} \Alpa{problem}: #2}
+        }{
+            \section{\hspace{-5mm}\problemName{} \arabic{problem}: #2}
+        }
+    }
+}
+\newcommand{\subproblem}[2][]{
+    \setcounter{equation}{0}
+    \ifstrempty{#1}{
+        \stepcounter{subproblem}
+    }{
+        \setcounter{subproblem}{#1}
+    }
+    \ifstrempty{#2}{
+        \ifbool{appendix}{
+            \section{\hspace{-2mm}\Alph{problem}.\arabic{subproblem}}
+        }{
+            \section{\hspace{-2mm}\arabic{problem}.(\alph{subproblem})}
+        }
+    }{
+        \ifbool{appendix}{
+            \section{\hspace{-2mm}\Alph{problem}.\arabic{subproblem}. #2}
+        }{
+            \section{\hspace{-2mm}\arabic{problem}.(\alph{subproblem}) #2}
+        }
+    }
+}
+
+% Appendix
+\newcommand{\myAppendix}{
+    \setcounter{section}{0}
+    \renewcommand{\sectionname}{Appendix}
+    \renewcommand{\thesection}{\Alph{section}}
+    \renewcommand{\thesubsection}{\Alph{section}.\arabic{subsection}}
+    \renewcommand{\perhapscolon}[1]{\perhapsdot{##1}}
+}
+
+% Bookmarks
+\hypersetup{
+    bookmarksnumbered=true
+}
+
+% Reference nome for task and subtask
+\crefname{section}{\sectionname}{\sectionnamepl}
+
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \everymath{\displaystyle}
+
+% commands for spacing
+\newcommand{\Tstrut}{\rule{0pt}{4mm}}         % = `top' strut
+\newcommand{\Bstrut}{\rule[-2mm]{0mm}{0mm}}   % = `bottom' strut
+
+% Paired Delimiters {}, (), []
+\providecommand\given{} % so it exists
+\newcommand\SetSymbol[1][]{
+   \nonscript\,#1\vert \allowbreak \nonscript\,\mathopen{}}
+\DeclarePairedDelimiterX\Set[1]{\lbrace}{\rbrace}%
+ { \renewcommand\given{\SetSymbol[\delimsize]} #1 }
+\DeclarePairedDelimiterX{\Bkt}[1]{[}{]}{#1}
+\DeclarePairedDelimiterX{\Paren}[1]{(}{)}{#1}
+\DeclarePairedDelimiterX{\Abs}[1]{\lvert}{\rvert}{#1}
+\newcommand{\PR}[1]{\Pr\Bkt*{#1}}
+\newcommand{\overbar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
+
+\newcolumntype{D}{>{$(}l<{)$}}
+\newcolumntype{R}{>{\displaystyle}r}
+\newcolumntype{C}{>{\displaystyle}c}
+\newcolumntype{L}{>{\displaystyle}l}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsfonts}
+\usepackage{amsthm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Declare operator and useful math command
+\DeclareMathOperator{\EOp}{\mathbb{E}}
+\newcommand{\E}[1]{\ensuremath{\EOp\Bkt*{#1}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\PS}[1]{\mathcal{P}(#1)}
+\newcommand{\ve}{\varepsilon}
+
+\newcommand{\sst}{\subset}
+\newcommand{\sse}{\subseteq}
+
+\newcommand{\ie}{\text{ i.e., }}
+\newcommand{\st}{\text{ s.t.  }}
+
+
+% Declare delimiter
+\DeclareMathDelimiter{\lVert}
+  {\mathopen}{symbols}{"6B}{largesymbols}{"0D}
+\DeclareMathDelimiter{\rVert}
+  {\mathclose}{symbols}{"6B}{largesymbols}{"0D}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\theoremstyle{plain}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setCJKmainfont{思源宋體 TW}
+%\setmainfont{思源宋體 TW}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+%\begin{CJK*}{UTF8}{bsmi}
+\course{Introduction to Analysis I}
+\semester{Fall 2021}
+%\teacher{}
+\department{}
+\assignment{3}
+\date{\today}
+\student[$\dagger$]{Yu-Chieh Kuo}{B07611039}
+\affil[$\dagger$]{Department of Information Management, National Taiwan University}
+\ujtitle
+
+% p1
+\problem{}
+
+% p1-1
+\subproblem{}
+To prove $d_2$ is a metric on $X$, we need to show that
+\begin{enumerate}
+    \item $d_2(p,q) > 0$ if $p \neq q$ and $d(p,p) = 0$.
+    \item $d_2(p,q) = d_2(q,p)$.
+    \item $d_2(p,q) \leq d_2(p,r) + d_2(r,q) \ \forall r \in X$.
+\end{enumerate}
+
+Also, since $d$ is a metric on $X$, we have $d(p,q) > 0$ 
+if $p \neq q$ and $d(p,p) = 0$.
+
+To 1., we have
+\[
+    \begin{array}{RCCL}
+        d_2(p,q) & = & \frac{d(p,q)}{1+d(p,q)} & > 0 \\
+        d_2(p,p) & = & \frac{d(p,p)}{1+d(p,p)} & = 0.
+    \end{array}
+\]
+
+To 2., we have
+\[
+    d_2(p,q) = \frac{d(p,q)}{1+d(p,q)} = \frac{d(p,q)}{1+d(p,q)}
+    = d_2(q,p).
+\]
+
+To 3., if $d(p,q) > 0$, then
+\[
+    \begin{array}{RCCL}
+        d_2(p,q) & = & \frac{d(p,q)}{1+d(p,q)} & = 1 - \frac{1}{1+d(p,q)} \\
+        & \leq & 1 - \frac{1}{1+d(p,r)+d(r,q)} & =  \frac{d(p,r)+d(r,q)}{1+d(p,r)+d(r,q)} \\
+        & \leq & \frac{d(p,r)}{1+d(p,r)} + \frac{d(r,q)}{1+d(r,q)} & = d_2(p,r) + d_2(r,q).
+    \end{array}
+\]
+This property holds when $d(p,q) = 0 $ as well. 
+
+The significance of $d_2$ indicates that we can define another metric
+based on a defined metric.
+
+% p1-2
+\subproblem{}
+As 1.(a), we could find $\rho$ is a metric by checking those three properties:
+\begin{enumerate}
+    \item $\rho(a,b) > 0$ if $a \neq b$ and $\rho(a,a) = 0$.
+    \item $\rho(a,b) = \rho(b,q)$.
+    \item $\rho(a,b) \leq \rho(a,c) + \rho(c,b) \ \forall c \in \{0, 1\}^{\N}$.
+\end{enumerate}
+To 1., we define $\N_+$ as the set containing positive natural numbers and
+positive infinity.
+If $a = b$, then $a_i = b_i \implies \rho(a,b) = 0$, where $i \in \N_+$.
+If $a \neq b$, then there exists some $i \in \N_+$ is a positive number such that
+$a_i \neq b_i$, which implies $\lvert a_i - b_i \rvert > 0$. Therefore,
+$\rho(a,b)>0$.
+
+To 2., since $|a_i - b_i| = |b_i - a_i|$, we have
+\[
+    \rho(a,b) = \sum^{\infty}_{i=1}\frac{|a_i - b_i|}{2^i}
+    = \sum^{\infty}_{i=1} \frac{|b_i - a_i|}{2^i}
+    = \rho(b,a).
+\]
+
+To 3., since $a_i, b_i \in \R \ \forall i \in \N_+$, and the triangle
+inequality holds for real numbers, we can say that $\forall c_i \in
+\{0,1\}^{\N}$, $|a_i + b_i| \leq |a_i - c_i| + |c_i - b_i|$ holds.
+Thus,
+\[
+    \begin{array}{RCL}
+        \rho(a,b) & = & \sum^{\infty}_{i=1}\frac{|a_i-b_i|}{2^i} \\
+        & \leq & \sum^{\infty}_{i=1}\frac{|a_i-c_i| + |c_i - b_i|}{2^i} \\
+        & = & \sum^{\infty}_{i=1}\frac{|a_i-c_i|}{2^i} 
+        + \sum^{\infty}_{i=1}\frac{|c_i-b_i|}{2^i} \\
+        & = & \rho(a,c) + \rho(c,b).  
+    \end{array}
+\]
+By checking the definition of metric, we can find that $\rho$ is a metric.
+
+After substituting $\{0,1\}^{\N}$ into the infinite product space
+$Y = X_1 \times X_2 \times \cdots$, and substituting $|a_i - b_i|$
+into $d_i(a_i, b_i)$, to check new $\rho$ is a metric or not, we could
+still follow the same process as above.
+
+At first, if $a = b$, then $a_i = b_i \forall i \in \N_+$, which
+implies $d_i(a_i, b_i) = 0 \forall i \in \N_+$. Hence, it's clearly that
+$\rho(a,b) = \sum^{\infty}_{i=1} \frac{d_i(a_i,b_i)}{2^i} = 0$.
+If $a \neq b$, then there exists some $i \in \N_+$ is a positive number such that
+$a_i \neq b_i$, which implies $d_i(a_i,b_i)>0$ for this $i$. Therefore,
+it's clearly that $\rho(a,b)>0$.
+
+Secondly, since $d_i$ is a metric for $i \in \N_+$, we have
+\[
+    \rho(a,b) = \sum^{\infty}_{i=1} \frac{d_i(a_i,b_i)}{2^i}
+    = \sum^{\infty}_{i=1} \frac{d_i(b_i,a_i)}{2^i} = \rho(b,a).
+\]
+
+Lastly, since $d_i$ is a metric for $i \in \N_+$, the triangle inequality holds.
+Therefore,
+\[
+    \begin{array}{RCL}
+        \rho(a,b) & = & \sum^{\infty}_{i=1}\frac{d_i(a_i-b_i)}{2^i} \\
+        & \leq & \sum^{\infty}_{i=1}\frac{d_i(a_i-c_i)+ d_i(c_i-b_i)}{2^i} \\
+        & = & \sum^{\infty}_{i=1}\frac{d_i(a_i-c_i)}{2^i} 
+        + \sum^{\infty}_{i=1}\frac{d_i(c_i-b_i)}{2^i} \\
+        & = & \rho(a,c) + \rho(c,b).
+    \end{array}
+\]
+
+By checking the definition of metric, we can find that $\rho$ is a metric.
+
+% p2
+\problem{}
+First, we show that $E'$ is closed.
+
+By {\bf Definition 2.18} in Rudin, it suffices to say every limit point
+of $E'$ is a limit point of $E$.
+Given a limit point $p \in E'$, every neighborhood $V$ of $p$ contains
+a point $p'$ such that $p' \in E'$. Since $p'$ is a limit point of $E$,
+there exists an open neighborhood $U$ of $p'$ contains $q \neq p'$
+such that $q \in E$, where
+\[
+    U = V \cap B\left(p',\frac{1}{2}d(p,p')\right) \sse V.
+\]
+(Note that $B(a,b)$ means the open ball centering at $a$ with radius $b$.)\\
+Therefore, since $q \neq p$, $q \in U \sse V$, and $q \in E$, $p$ is a 
+limit point of $E$.
+
+Next, we would like to show that $X - E'$ is open, which is equivalent to 
+prove $E'$ is close.
+Given a point $p \in X- E'$, there exists an open neighborhood $V$ of $p$
+contains no points $q \neq p$ such that $q \in E$.
+Next, to show $V$ is an open neighborhood of $p$ such that $V \sse X-E'$,
+we assume by contradiction that there exists a limit point $q$ of $E$
+such that $q \neq p$ and $q \in V$, then here we could contruct
+a neighborhood $U$ as
+\[
+    U = V \cap B\left(q,\frac{1}{2}d(p,q)\right) \sse V,
+\]
+where $U$ is an open neighborhood of $q$ containing on points of $E$,
+leading to a contrary. Consequently, $V \sse X-E'$ is an open neighborhood
+of $p \in X-E'$ i.e., $X-E'$ is open, equivalent to $E'$ is closed.
+
+Second, we want to prove that $E$ and $\bar E$ have the same limit points.
+It is equivalent to prove that whether $E' = \bar E'$.
+\begin{itemize}
+    \item ($E' \sse \bar E'$): 
+        Since $E \sse \bar E$, $E' \sse \bar E'$ obviously.
+    \item ($E' \subseteq \bar E'$):
+        Given a limit point $p$ of $\bar E = E \cup E'$. If $p$
+        is a limit point of $E$, the proof is done; if $p$ is a limit point
+        of $E'$, since $E'$ is closed, it has to be that $p \in E'$
+        or $p$ is a limit point of $E$.
+        In any case, $E' subseteq \bar E'$ is true.
+\end{itemize}
+
+Lastly, the problem comes to whether $E$ and $E'$ always have the same limit point.
+It seems to have an easy yes; however, the answer is false. Consider
+\[
+    E = \{\frac{1}{n}: n \in \Z_+ \} \sse \R.
+\]
+Here $E' = \{0\}$ but $(E')' = \emptyset$.
+
+% p3
+\problem{}
+\begin{enumerate}[label = (\alph*)]
+    \item This problem is equivalent to show that $E^\circ \sse (E^\circ)^\circ$.
+        Given any $x \in E^\circ$, there exists $r>0$ such that $B(x,r) \sse E$. 
+        Since $B(x,r)$ is an open set, all points in $B(x,r)$ are interior points.
+        That is, $\forall y \in B(x,r), \ \exists s>0 \st B(y,s) \sse B(x,r) \sse E$.
+        This implies that every $y \in B(x,r)$ is an interior point of $E$ i.e.,
+        $B(x,r) \sse E^\circ \implies x \in (E^\circ)^\circ \iff
+        E^\circ \sse (E^\circ)^\circ$.
+    \item By {\bf Definition 2.18} in Rudin, since $E$
+        is open, every point of $E$ is an interior point of $E$ i.e.
+        $E \sse E^\circ$. Also, $E^\circ \sse E$ since all points in
+        $E^\circ$ must be in $E$. Thus, $E = E^\circ$.
+    \item $G \sse E \implies G^\circ \sse E^\circ$, and $G = G^\circ$ by (b).
+        Hence $G = G^\circ \sse E^\circ$.
+    \item 
+        \begin{itemize}
+            \item ($(E^\circ)^c \sse \bar E^c$):
+                Given any $x \in (E^\circ)^c$, if $x \notin E$, then 
+                $x \in E^c \sse \bar E^c$; if $x \in E$, then every neighborhood $U$
+                of $x$ must satisfy $U \cap E^c \neq \emptyset$ i.e., $x$ is a 
+                limit point of $E^c$, which means $x \in (E^c)' \sse \bar E^c$.
+                For both cases, $x \in \bar E^c$ at all.
+            \item ($\bar E^c \sse (E^\circ)^c$): 
+                Given any $x \in \bar E^c$, it shows that either $x \in E^c$
+                or $x \in (E^c)'$. If $x \in E^c$, then 
+                $x \neq E \implies x \neq E^\circ \ie x \in (E^\circ)^c$.
+                On the other hand, if $x \in (E^c)'$, then every neighborhood $V$
+                of $x$ must satisfy $V \cap E^c \neq \emptyset$. Hence, $x$ is not
+                an interior point of $E$, i.e., $E \notin E^\circ \implies 
+                x \in (E^\circ)^c$.
+        \end{itemize}
+    \item The answer is {\bf NO}. Consider $X$ is a metric space in $\R$ and 
+        $E = \Q \sse X$. We have $E^\circ = \emptyset$ since $\bar \Q$ is dense in $\R$,
+        and $(\bar E)^\circ = R$ since $\Q$ is dense in $\R$ and $\R$ is open.
+    \item The answer is {\bf NO}. Following by the setting in (e),
+        we have $\bar E = \R$ since $\Q $ is dense in $\R$, and $\bar{E^\circ}
+         = \bar \emptyset = \emptyset$ since $\bar \Q$ is dense in $\R$.
+\end{enumerate}
+
+% p4
+\problem{}
+\subproblem{}
+Consider $E$ be the set of points having only rational coordinates.
+Since $\Q$ is countable, $E = \Q^k$ is also countable.
+
+Now, given any ${\bf p} = (p_1,\dots,p_k) \in \R^k$, we would like
+to show that ${\bf p}$ is a limit point of $E$.
+Consider any open neighborhood $N_r({\bf p})$ with $r > 0$. As $\Q$
+is dense in $\R$, every coordinate of ${\bf p}$ is a limit point of
+$\Q$.
+
+
+%\end{CJK*}
+\end{document}
+
