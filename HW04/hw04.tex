@@ -1,0 +1,558 @@
+\documentclass[a4paper]{article}
+%The main tex begins from line 262
+\usepackage[top = 2.5cm, bottom = 2.5cm, left = 2cm, right = 2cm]{geometry} 
+\usepackage{amsmath} % For the usage of \because and \therefore
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{etoolbox}
+\usepackage{indentfirst}
+\usepackage{tabularx}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{authblk}
+\usepackage[calcwidth]{titlesec}
+\usepackage{bookmark}
+\usepackage[capitalize]{cleveref}
+\usepackage{array}
+\usepackage[english]{babel}
+\usepackage{enumitem} % For the usage of labeling in enumerate and itemize
+%\usepackage[utf8]{inputenc}
+%\usepackage{CJKutf8}
+\usepackage{xeCJK}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\makeatletter
+% Macros for setting basic info
+\gdef\@uni{National Taiwan University}
+\gdef\@department{Information Management}
+\gdef\@me{Yu-Chieh Kuo}
+
+\newcommand{\course}[2][]{
+    \ifstrempty{#1}{
+        \gdef\shortcourse{#2}
+    }{
+        \gdef\shortcourse{#1}
+    }
+    \gdef\@course{#2}
+}
+\newcommand{\teacher}[1]{\gdef\@teacher{#1}}
+\newcommand{\semester}[1]{\gdef\@semester{#1}}
+\newcommand{\uni}[1]{\gdef\@uni{#1}}
+\newcommand{\department}[1]{\gdef\@department{#1}}
+\newcommand{\student}[3][]{
+    \ifstrempty{#1}{
+        \author{\textbf{#2} \textbf{#3}}
+    }{
+        \author[#1]{\textbf{#2} \textbf{#3}}
+    }
+}
+\newcommand{\assignment}[2][Homework]{
+    \ifstrempty{#2}{
+        \gdef\@assignment{#1}
+    }{
+        \gdef\@assignment{#1 #2}
+    }
+}
+
+% page style for title page
+\fancypagestyle{title}{
+    \fancyhf{}
+    \renewcommand{\headrulewidth}{0pt}
+    \cfoot{\footnotesize Page {\thepage} of \pageref{LastPage}} 
+}
+\newcommand{\ujtitle}{
+    \thispagestyle{title}
+    \noindent\begin{tabularx}{\linewidth}{Xr} % This is a simple tabular environment to align your text nicely 
+    {\large \bf{\@course}} \\
+    National Taiwan University, \@semester  \\
+    \bottomrule % \hline produces horizontal lines.
+    \end{tabularx}
+    
+    \vspace*{0.3cm}
+
+    \begin{center}
+        {\huge\bf\textsc{\@assignment}}\\[3mm]
+        {\@author}
+    \end{center}
+
+    \vspace*{0.3cm}
+}
+\newcommand{\mymaketitle}{
+    \thispagestyle{title}
+    \vspace*{-15mm}
+    \noindent\begin{tabularx}{\linewidth}{Xr}
+                                & \textsl{National Taiwan University} \\
+        \large\textbf{\@semester,} & \textsl{Department of \@department}         \\
+        \large\textbf{\@course} & \textsl{Prof. \@teacher}\Bstrut\\
+        \bottomrule
+    \end{tabularx}
+
+    \vspace*{10mm}
+
+    \begin{center}
+        {\huge\textsc{\@assignment{}}}\\[6mm]
+        {\@author}
+    \end{center}
+
+    \vspace*{1cm}
+}
+
+% page style for contents
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{13.6pt}
+\lhead{\small {\@course}: {\@assignment}}
+\rhead{\small {\@me}}
+\cfoot{\small {Page {\thepage} of \pageref{LastPage}}} 
+
+% Style for part, section, and subsection
+% Part
+\titleclass{\part}{straight}
+\titleformat{\part}
+[display]
+{\centering\bfseries}
+{\setlength{\titlewidth}{1.5\titlewidth}\large\titleline*[c]{\titlerule[.6pt]}\vspace{3pt}\MakeUppercase{\partname} \thepart}
+{0pt}
+{\LARGE\itshape}
+[{
+    \setlength{\titlewidth}{1.5\titlewidth}
+    \titleline*[c]{\titlerule*{\mdseries-}}
+}]
+\titlespacing*{\part}{0pt}{20pt}{20pt}[0pt]
+
+% Problem and subproblem
+\setcounter{secnumdepth}{0}
+\newcounter{problem}
+\newcounter{subproblem}[problem]
+\newbool{appendix}
+\gdef\problemName{Problem}
+\newcommand{\problem}[2][]{
+    \setcounter{equation}{0}
+    \ifstrempty{#1}{
+        \stepcounter{problem}
+    }{
+        \setcounter{problem}{#1}
+    }
+    \ifstrempty{#2}{
+        \ifbool{appendix}{
+            \section{\hspace{-5mm}\problemName{} \Alph{problem}.}
+        }{
+            \section{\hspace{-5mm}\problemName{} \arabic{problem}}
+        }
+    }{
+        \ifbool{appendix}{
+            \section{\hspace{-5mm}\problemName{} \Alpa{problem}: #2}
+        }{
+            \section{\hspace{-5mm}\problemName{} \arabic{problem}: #2}
+        }
+    }
+}
+\newcommand{\subproblem}[2][]{
+    \setcounter{equation}{0}
+    \ifstrempty{#1}{
+        \stepcounter{subproblem}
+    }{
+        \setcounter{subproblem}{#1}
+    }
+    \ifstrempty{#2}{
+        \ifbool{appendix}{
+            \section{\hspace{-2mm}\Alph{problem}.\arabic{subproblem}}
+        }{
+            \section{\hspace{-2mm}\arabic{problem}.(\alph{subproblem})}
+        }
+    }{
+        \ifbool{appendix}{
+            \section{\hspace{-2mm}\Alph{problem}.\arabic{subproblem}. #2}
+        }{
+            \section{\hspace{-2mm}\arabic{problem}.(\alph{subproblem}) #2}
+        }
+    }
+}
+
+% Appendix
+\newcommand{\myAppendix}{
+    \setcounter{section}{0}
+    \renewcommand{\sectionname}{Appendix}
+    \renewcommand{\thesection}{\Alph{section}}
+    \renewcommand{\thesubsection}{\Alph{section}.\arabic{subsection}}
+    \renewcommand{\perhapscolon}[1]{\perhapsdot{##1}}
+}
+
+% Bookmarks
+\hypersetup{
+    bookmarksnumbered=true
+}
+
+% Reference nome for task and subtask
+\crefname{section}{\sectionname}{\sectionnamepl}
+
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \everymath{\displaystyle} % display all math symbol as DISPLAY MODE
+
+% commands for spacing
+\newcommand{\Tstrut}{\rule{0pt}{4mm}}         % = `top' strut
+\newcommand{\Bstrut}{\rule[-2mm]{0mm}{0mm}}   % = `bottom' strut
+
+% Paired Delimiters {}, (), []
+\providecommand\given{} % so it exists
+\newcommand\SetSymbol[1][]{
+   \nonscript\,#1\vert \allowbreak \nonscript\,\mathopen{}}
+\DeclarePairedDelimiterX\Set[1]{\lbrace}{\rbrace}%
+ { \renewcommand\given{\SetSymbol[\delimsize]} #1 }
+\DeclarePairedDelimiterX{\Bkt}[1]{[}{]}{#1}
+\DeclarePairedDelimiterX{\Paren}[1]{(}{)}{#1}
+\DeclarePairedDelimiterX{\Abs}[1]{\lvert}{\rvert}{#1}
+\newcommand{\PR}[1]{\Pr\Bkt*{#1}}
+\newcommand{\overbar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
+
+\newcolumntype{D}{>{$(}l<{)$}}
+\newcolumntype{R}{>{\displaystyle}r}
+\newcolumntype{C}{>{\displaystyle}c}
+\newcolumntype{L}{>{\displaystyle}l}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsfonts}
+\usepackage{amsthm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Declare operator and useful math command
+\DeclareMathOperator{\EOp}{\mathbb{E}}
+\newcommand{\E}[1]{\ensuremath{\EOp\Bkt*{#1}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\PS}[1]{\mathcal{P}(#1)}
+\newcommand{\ve}{\varepsilon}
+\newcommand{\es}{\emptyset}
+
+\newcommand{\sst}{\subset}
+\newcommand{\sse}{\subseteq}
+\newcommand{\spt}{\supset}
+\newcommand{\spe}{\supseteq}
+
+\newcommand{\ie}{\text{ i.e., }}
+\newcommand{\st}{\text{ s.t.  }}
+
+% Declare delimiter
+\DeclareMathDelimiter{\lVert}
+  {\mathopen}{symbols}{"6B}{largesymbols}{"0D}
+\DeclareMathDelimiter{\rVert}
+  {\mathclose}{symbols}{"6B}{largesymbols}{"0D}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+\DeclarePairedDelimiter\nrm{\lvert}{\rvert}
+\DeclarePairedDelimiter\vct{\langle}{\rangle}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\theoremstyle{plain}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setCJKmainfont{思源宋體 TW}
+%\setmainfont{思源宋體 TW}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Use listing package to display different programming language
+% Use xcolor package to display syntax color for programming language
+% Usage: \env{lstlisting}[language=LANGUAGENAME]
+% Common language name: Python, bash, C, C++, R, sh, make, Matlab
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\lstset{frame=tb,
+  language=Python,
+      aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+  columns=flexible,
+      basicstyle={\small\ttfamily},
+    numbers=none,
+    numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+      commentstyle=\color{dkgreen},
+    stringstyle=\color{mauve},
+    breaklines=true,
+  breakatwhitespace=true,
+      tabsize=3
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+%\begin{CJK*}{UTF8}{bsmi}
+\course{Introduction to Mathematical Analysis (I)}
+\semester{Fall 2021}
+%\teacher{}
+\department{}
+\assignment{4}
+\date{\today}
+\student[$\dagger$]{Yu-Chieh Kuo}{B07611039}
+\affil[$\dagger$]{Department of Information Management, National Taiwan University}
+\ujtitle
+\section{Notations used in the homework}
+To avoid notations confusion, we define the common used notations initially.
+\begin{enumerate}
+    \item Define $N_r(x)$ as the neighborhood centering at $x$ in radius $r$.
+        On the other hand, $N(x)$ indicates the neighborhood centering at $x$ without
+        specific radius.
+    \item Define $B_r(x)$ as the open ball centering at $x$ in radius $r$.
+\end{enumerate}
+
+%% p1
+\problem{}
+Following the {\it hint}, we fix $\delta > 0$ and pick $x_1$ in $X$,
+then choose $x_{j+1} \st d(x_i, x_{j+1}) \geq \delta$ for $i=1,\dots,j$.
+Let $E_\delta \sse X$ be the set collecting these $x_i$.
+Next, we need to show that this process must stop after a finite number of steps and that
+$X$ can therefore be covered by finite many neighborhoods of radius $\delta$.
+This statement can be proved by contradiction. Assume by contradiction,
+the process will not stop after finite number of steps i.e., $E_\delta$ is an
+infinite subset of $X$, and $E_\delta$ has a limit point $p \in X$ since it states
+that all infinite subsets of $X$ have a limit point.
+Moreover, based on {\bf Theorem 2.20} in Rudin
+\footnote{If $p$ is a limit point of a set $E$, then every neighborhood of $p$
+contains {\it infinitely} many points of $E$.}
+, we define two points $q, r$ within $N_{\frac{\delta}{4}}(p)$. 
+Note that $q,r \in N_{\frac{\delta}{4}}(p) \sse E_\delta$.
+Therefore, by triangle inequality, we have
+\[
+    d(q,r) \leq d_(q,p) + d(p,r) < \frac{\delta}{4} +  \frac{\delta}{4} < \delta,
+\]
+which contradicts the construction of $E_\delta$.
+Consequently, it's proved that $X$ can be covered by finite many neighborhoods of 
+radius $\delta$.
+
+By the definition of {\it separable}, $X$ is separable if it has a countable
+dense subset. We derive that it has a countable subset, then we are going to
+find its dense set. The definition of dense set $D \sse X$ is
+\[
+    \forall \ve>0 \, \forall x \in X, \, D \cap B_\ve(x) \neq \emptyset,
+\]
+and, by the Archimedean property, the definition can be re-write to
+\[
+    \forall n\in\N \, \forall x \in X, \, D \cap B_{\frac{1}{n}}(x) \neq \emptyset.
+\]
+Use $E_\delta$ again. Take $\delta = \frac{1}{n}$, and define the union of all \
+$E_\delta$ as 
+\[
+    E = \bigcap_{n=1}^\infty E_\frac{1}{n} \sse X.
+\]
+Here $E$ is dense in $X$, since given any $p \in X-E$, there exists 
+$q \in B_r(p)$, where $q \in E$. Pick any $n \in \Z_+ \st \frac{1}{n} < r$,
+it suffices to say that $q \in B_r(p)$, that is, $E$ is dense in $X$.
+
+Finally, since there is a countable dense subset of $X$, we could say $X$
+is separable.
+
+% p2
+\problem{}
+Since metric space $K$ is compact, each of $K$'s open covers has a finite subcover.
+In other words, for every collection $S$ of open subsets of $K$,
+$K \sse \bigcup_{x\in S}x$, and there is a finite subset $S'$ of $S$ such that
+$K \sse \bigcup_{x\in S'}x$.
+
+Given any $\delta > 0$, $\delta \in \R$, define an open cover $C$ of $K$ by
+$C = \{B_\delta(p): p \in K\}$, and its finite subcover $F$ of $K$.
+Here the union of $F$ can be the finite collection of $B_\delta(p): p \in K$,
+and $K \sse \bigcup_{x\in F}x$. It's equivalent to $K$ is bounded, then,
+by {\bf Problem 1}, we can say that $K$ is separable.
+
+% p3
+\problem{}
+By the results in {\bf Problem 1} and {\bf Ex. 2.23} in Rudin (one of the problems
+in Homework 3), we have that $X$ is separable and countable.
+Let $V = \{V_n\}$ be a countable base of $X$. Give any open cover
+$C$ of $X$, for all $V_n \in V$, we take $G_n \in C$ containing $V_n$ and collect
+all $G_n$ as $G$, i.e.,
+\[
+    G = \{G_n : B_n \sse G_n \forall n \in \Z_+\}. 
+\]
+Note that $G$ is a countable subset of $C$ and $G$ covers $X$ since $V$ is a 
+countable base of $X$. Hence, given any open cover $C$ of $X$, there is 
+a countable subcover $G$ of $X$. Next, assume by contradiction, if
+there were no finite subcover of $G$ covering $X$, then the complement
+$F_n$ of $G_1\cup\cdots\cup G_n$ is nonempty for each $n$, but $\cap F_n$ is empty.
+Let $E$ be a set containing a point from each $F_n$, $E$ here is infinite and has a
+limit point $p$. Note that $p \in G_n$ for some $n$ since $G$ is an open cover
+of $X$. In addition, since $G_n$ is open, there exists an open neighborhood $N(p)$
+such that $N(p) \sse G_n$. By the construction of $F_n$,
+$N(p) \cap F_n = \es$, contrary to the assumption that $p$ is a limit point of $E$.
+Consequently, $X$ is compact.
+
+
+% p4
+\problem{}
+\subproblem{} %p4-1
+Let $p^{-1} = \alpha, q^{-1} = 1-\alpha$ and re-write the right-hand-side to
+\[
+    \alpha u^p + (1-\alpha)v^q.
+\]
+Take logarithm to this function, it becomes
+\[
+    \ln(\alpha u^p + (1-\alpha)v^q),
+\]
+and due to the concavity of logarithm, we have the inequality as
+\[
+    \begin{array}{RCL}
+        \ln(\alpha u^p + (1-\alpha)v^q) & \geq
+        & \alpha\ln(u^p) + (1-\alpha)\ln(v^q) \\
+        & = & \alpha p\ln(u) + (1-\alpha)q\ln(v) \\
+        & = & \ln(u) + \ln(v).
+    \end{array}
+\]
+This inequality is equivalent to $uv \leq \frac{u^p}{p} + \frac{v^q}{q}$.
+In addition, by the proposition of concavity, the equality holds if 
+and only if $u^p = v^q$.
+    
+\subproblem{} % p4-2
+We can trickily focus on the case $\nrm{x}_p = \nrm{y}_p = 1$, as all positive numbers
+are scalars for 1, and multiplying scalars on both sides in the equality is linear
+i.e., 
+\[
+    \nrm{\vct{ax,by}} \leq \nrm{ax}_p\nrm{by}_p
+\]
+holds for arbitrary $a,b$.
+Starting to our derivation.
+\[
+    \begin{array}{RCL}
+        \nrm{\vct{x,y}} & = & \nrm{x_1y_1 + x_2y_2 + \dots + x_ky_k} \\ [2mm]
+        & \leq & \nrm{x_1}\nrm{y_1} + \nrm{x_2}\nrm{y_2} +\dots + \nrm{x_k}\nrm{y_k}
+        \quad \text{(By triangle inequality.)} \\ [2mm]
+        & \leq & \left(\frac{\nrm{x_1}^p}{p} + \frac{\nrm{y_1}^q}{q}
+        + \dots + \frac{\nrm{x_k}^p}{p} + \frac{\nrm{y_k}^q}{q}\right) 
+        \quad \text{(By {\bf 4(a)}).} \\
+        & = & \frac{1}{p}\sum_{i=1}^k\nrm{x_i}^p + \frac{1}{q}\sum_{i=1}^k\nrm{y_i}^p
+        \quad \text{(Note that $(\nrm{x}_p)^p = (\nrm{y}_p)^p = 1$ as well.)} \\
+        & = & \frac{1}{p} + \frac{1}{q} \\ [2mm]
+        & = & 1.
+    \end{array}
+\]
+Here we prove that $\nrm{\vct{x,y}} \leq \nrm{x}_p\nrm{y}_p$ for the case
+$\nrm{x}_p = \nrm{y}_p = 1$, and the inequality holds for any case as previous 
+discussion.
+The equality holds if and only if $\nrm{x}^p = \nrm{y}^q$.
+
+\subproblem{} % p4-3
+Starting from the case $\sum_{i=1}^k\nrm{x_i+y_i}^p$, we have
+\[
+    \begin{array}{RCL}
+        \sum_{i=1}^k\nrm{x_i+y_i}^p & \leq & 
+        \sum_{i=1}^k(\nrm{x_i}\cdot\nrm{x_i+y_i}^{p-1}
+        + \nrm{y_i}\cdot\nrm{x_i+y_i}^{p-1})
+        \quad \text{(By triangle inequality.)} \\
+        & = & \sum_{i=1}^k\nrm{x_i}\cdot\nrm{x_i+y_i}^{p-1}
+        + \sum_{i=1}^k\nrm{y_i}\cdot\nrm{x_i+y_i}^{p-1} \\
+        & \leq & \left(\sum_{i=1}^k\nrm{x_i}^p\right)^{\frac{1}{p}}
+        \left(\sum_{i=1}^k(\nrm{x_i+y_i}^{p-1})^q\right)^{\frac{1}{q}} \\ [6mm]
+        & & + \left(\sum_{i=1}^k\nrm{y_i}^p\right)^{\frac{1}{p}}
+        \left(\sum_{i=1}^k(\nrm{x_i+y_i}^{p-1})^q\right)^{\frac{1}{q}}
+        \quad \text{(By {\bf 4(b).})} \\ [6mm]
+        & = & \nrm{x}_p\left(\sum_{i=1}^k(\nrm{x_i+y_i}^p)\right)^{\frac{1}{q}}
+        + \nrm{y}_p\left(\sum_{i=1}^k(\nrm{x_i+y_i}^p)\right)^{\frac{1}{q}}.
+    \end{array}
+\]
+Move $\left(\sum_{i=1}^k(\nrm{x_i+y_i}^p)\right)^{\frac{1}{q}}$ to the left-hand-side,
+the inequality becomes
+\[
+    \begin{array}{RL}
+        & \sum_{i=1}^k\nrm{x_i + y_i}^p 
+        \left(\sum_{i=1}^k(\nrm{x_i+y_i}^p)\right)^{\frac{-1}{q}}
+        \leq \nrm{x}_p + \nrm{y}_p \\
+        \iff & \left(\sum_{i=1}^k(\nrm{x_i+y_i}^p)\right)^{\frac{1}{p}}
+        \leq \nrm{x}_p + \nrm{y}_p \\
+        \iff & \nrm{x+y}_p \leq \nrm{x}_p + \nrm{y}_p.
+    \end{array}
+\]
+The equality holds if and only if $\nrm{x+y}_p = \nrm{x}_p + \nrm{y}_p$.
+
+\subproblem{} % p4-4
+Since
+\[
+    \nrm{x}_p = \left(\sum_{i=1}^k\nrm{x}^p \right)^\frac{1}{p}
+    \leq \left(\sum_{i=1}^k \max_i \nrm{x_i}^p\right)^\frac{1}{p}
+    = k^\frac{1}{p} \max_{1\leq i\leq k}\nrm{x_i},
+\]
+when $p \to \infty$, $\lim_{p\to\infty}\nrm{x}_p \leq \max_{1\leq i\leq k}\nrm{x_i}$.
+On the other hand,
+\[
+    \nrm{x}_p = \left(\sum_{i=1}^k\nrm{x_i}^p\right)^\frac{1}{p}
+    \geq \left(\max_{1\leq i\leq k} \nrm{x_i}^p\right)^\frac{1}{p}
+    = \max_{1\leq i\leq k} \nrm{x_i}.
+\]
+As $p \to \infty$, $\lim_{p\to\infty}\nrm{x}_p \geq \max_{1\leq i\leq k}\nrm{x_i}$.
+Hence, we can state that $\lim_{p\to\infty}\nrm{x}_p = \max_{1\leq i\leq k}\nrm{x_i}$.
+
+To establish inequalities among $l$-norm for $l = 1,p,q,\infty, \, 1<p<\infty$,
+we compare the case $l=1,p,\infty$ initially.
+It's clearly to say that $\nrm{x}_1 > \nrm{x}_p$, as 
+$(\nrm{x}_1)^p \geq (\nrm{x}_p)^p$. It's also easy to observe that 
+$\nrm{x}_p > \nrm{x}_\infty$, since
+\[
+    \nrm{x}_p = \left(\sum_{i=1}^k\nrm{x_i}^p\right)^\frac{1}{p}
+    \geq \left(\max_{1\leq i\leq k}\nrm{x_i}^p\right)^\frac{1}{p}
+    = \max_{1\leq i\leq k}\nrm{x_i} = \nrm{x}_\infty.
+\]
+Last, to compare the relation between $p$-norm and $q$-norm,
+it's a good attempt to differentiate it and then observe the relation.
+We have
+\[
+    \frac{\partial}{\partial {p}}\left(\sum_{i=1}^k\nrm{x_i}^p\right)^\frac{1}{p}
+    = \left(\frac{-\ln(\sum_{i=1}^k x_i^p)}{p^2}
+    + \frac{\sum_{i=1}^k x_i^p\ln(x_i)}{p\sum_{i=1}^k x_i^p}\right)
+    \left(\sum_{i=1}^kx_i^p\right)^\frac{1}{p} < 0.
+\]
+Hence, as $p$ increases, the value of $p$-norm decreases. At the end,
+we have the relation inequality that
+$\nrm{x}_1 > \nrm{x}_p > \nrm{x}_q > \nrm{x}_\infty$, where $1 < p < q < \infty$.
+
+\subproblem{} % p4-5
+Yes, they have the same topology.
+
+\subproblem{} % p4-6
+No. Consider a counter-example $x=(0,1), y=(1,0)$ in $\R^2$. For $p \in (0,1),
+\nrm{x+y}_p = 2^\frac{1}{p} > 2 = \nrm{x}_p + \nrm{y}_p$.
+
+
+% p5
+\problem{}
+First we check $X$ is compact.
+Let $O = \{O_i\}_{i \in S}$ be some open cover of $X$, $S$ be some proper set.
+Assume that it has no finite subcover, for each finite $F \sse S$, there exists
+some point $p \in X \st p \notin \bigcup_{i\in F}O_i$. This statement is
+equivalent to that for each finite $F \sse S$, there exists some point
+$p \in \bigcap_{i\in S}(X\setminus O_i)$. Hence, the collection 
+$\{X\setminus O_i\}_{i\in S}$ is a collection of closed sets in $X$ having
+the finite intersection property, which implies there is some point
+$q \in \bigcap_{i\in S}(X\setminus O_i) \ie q \notin \bigcap_{i\in S}O_i$,
+contrary to $\{O_i\}_{i\in S}$ is a cover of $X$. Hence, we conclude that
+$\{O_i\}_{i\in S}$ has a finite subcover, i.e., for every collection of 
+closed set in $X$, it has the finite intersection property. So $X$ is compact.
+
+Next, we check whether the property holds if $X$ is compact.
+Assume that $X$ is compact and let $\{C_i\}_{i\in S}$ be some family of closed
+subsets in $X$ having the finite intersection property.
+Assume by contradiction that $\bigcap_{i\in S}C_i=\emptyset$, then
+$\{X\setminus C_i\}_{i\in S}$ is an open cover of $X$, and it has a finite
+subcover i.e., $\bigcup_{i\in F}(X\setminus C_i)=X$ for some finite subset
+$F \sse S$. However, by asuumption it indicates $\bigcap_{i\in S}C_i=\emptyset$,
+which contradicts that $\{C_i\}_{i\in S}$ has the finite intersection property.
+Therefore we conclude that $\bigcap_{i\in S}C_i\neq\emptyset$.
+
+%\end{CJK*}
+\end{document}
+
