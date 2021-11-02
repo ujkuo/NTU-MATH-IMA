@@ -1,0 +1,449 @@
+\documentclass[a4paper]{article}
+%The main tex begins from line 188
+\usepackage[top = 2.5cm, bottom = 2.5cm, left = 2cm, right = 2cm]{geometry} 
+\usepackage{amsmath} % For the usage of \because and \therefore
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{etoolbox}
+\usepackage{indentfirst}
+\usepackage{tabularx}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{authblk}
+\usepackage[calcwidth]{titlesec}
+\usepackage{bookmark}
+\usepackage[capitalize]{cleveref}
+\usepackage{array}
+\usepackage[english]{babel}
+\usepackage{enumitem} % For the usage of labeling in enumerate and itemize
+%\usepackage[utf8]{inputenc}
+%\usepackage{CJKutf8}
+\usepackage{xeCJK}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\makeatletter
+% Macros for setting basic info
+\gdef\@uni{National Taiwan University}
+\gdef\@department{Information Management}
+\gdef\@me{Yu-Chieh Kuo}
+
+\newcommand{\course}[2][]{
+    \ifstrempty{#1}{
+        \gdef\shortcourse{#2}
+    }{
+        \gdef\shortcourse{#1}
+    }
+    \gdef\@course{#2}
+}
+\newcommand{\teacher}[1]{\gdef\@teacher{#1}}
+\newcommand{\semester}[1]{\gdef\@semester{#1}}
+\newcommand{\uni}[1]{\gdef\@uni{#1}}
+\newcommand{\department}[1]{\gdef\@department{#1}}
+\newcommand{\student}[3][]{
+    \ifstrempty{#1}{
+        \author{\textbf{#2} \textbf{#3}}
+    }{
+        \author[#1]{\textbf{#2} \textbf{#3}}
+    }
+}
+\newcommand{\assignment}[2][Homework]{
+    \ifstrempty{#2}{
+        \gdef\@assignment{#1}
+    }{
+        \gdef\@assignment{#1 #2}
+    }
+}
+
+% page style for title page
+\fancypagestyle{title}{
+    \fancyhf{}
+    \renewcommand{\headrulewidth}{0pt}
+    \cfoot{\footnotesize Page {\thepage} of \pageref{LastPage}} 
+}
+\newcommand{\ujtitle}{
+    \thispagestyle{title}
+    \noindent\begin{tabularx}{\linewidth}{Xr} % This is a simple tabular environment to align your text nicely 
+    {\large \bf{\@course}} \\
+    National Taiwan University, \@semester  \\
+    \bottomrule % \hline produces horizontal lines.
+    \end{tabularx}
+    
+    \vspace*{0.3cm}
+
+    \begin{center}
+        {\huge\bf\textsc{\@assignment}}\\[3mm]
+        {\@author}
+    \end{center}
+
+    \vspace*{0.3cm}
+}
+\newcommand{\mymaketitle}{
+    \thispagestyle{title}
+    \vspace*{-15mm}
+    \noindent\begin{tabularx}{\linewidth}{Xr}
+                                & \textsl{National Taiwan University} \\
+        \large\textbf{\@semester,} & \textsl{Department of \@department}         \\
+        \large\textbf{\@course} & \textsl{Prof. \@teacher}\Bstrut\\
+        \bottomrule
+    \end{tabularx}
+
+    \vspace*{10mm}
+
+    \begin{center}
+        {\huge\textsc{\@assignment{}}}\\[6mm]
+        {\@author}
+    \end{center}
+
+    \vspace*{1cm}
+}
+
+% page style for contents
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{13.6pt}
+\lhead{\small {\@course}: {\@assignment}}
+\rhead{\small {\@me}}
+\cfoot{\small {Page {\thepage} of \pageref{LastPage}}} 
+
+% Style for part, section, and subsection
+% Part
+\titleclass{\part}{straight}
+\titleformat{\part}
+[display]
+{\centering\bfseries}
+{\setlength{\titlewidth}{1.5\titlewidth}\large\titleline*[c]{\titlerule[.6pt]}\vspace{3pt}\MakeUppercase{\partname} \thepart}
+{0pt}
+{\LARGE\itshape}
+[{
+    \setlength{\titlewidth}{1.5\titlewidth}
+    \titleline*[c]{\titlerule*{\mdseries-}}
+}]
+\titlespacing*{\part}{0pt}{20pt}{20pt}[0pt]
+
+% Problem and subproblem
+\setcounter{secnumdepth}{0}
+\newcounter{problem}
+\newcounter{subproblem}[problem]
+\newbool{appendix}
+\gdef\problemName{Problem}
+\newcommand{\problem}[2][]{
+    \setcounter{equation}{0}
+    \ifstrempty{#1}{
+        \stepcounter{problem}
+    }{
+        \setcounter{problem}{#1}
+    }
+    \ifstrempty{#2}{
+        \ifbool{appendix}{
+            \section{\hspace{-5mm}\problemName{} \Alph{problem}.}
+        }{
+            \section{\hspace{-5mm}\problemName{} \arabic{problem}}
+        }
+    }{
+        \ifbool{appendix}{
+            \section{\hspace{-5mm}\problemName{} \Alpa{problem}: #2}
+        }{
+            \section{\hspace{-5mm}\problemName{} \arabic{problem}: #2}
+        }
+    }
+}
+\newcommand{\subproblem}[2][]{
+    \setcounter{equation}{0}
+    \ifstrempty{#1}{
+        \stepcounter{subproblem}
+    }{
+        \setcounter{subproblem}{#1}
+    }
+    \ifstrempty{#2}{
+        \ifbool{appendix}{
+            \section{\hspace{-2mm}\Alph{problem}.\arabic{subproblem}}
+        }{
+            \section{\hspace{-2mm}\arabic{problem}.(\alph{subproblem})}
+        }
+    }{
+        \ifbool{appendix}{
+            \section{\hspace{-2mm}\Alph{problem}.\arabic{subproblem}. #2}
+        }{
+            \section{\hspace{-2mm}\arabic{problem}.(\alph{subproblem}) #2}
+        }
+    }
+}
+
+% Appendix
+\newcommand{\myAppendix}{
+    \setcounter{section}{0}
+    \renewcommand{\sectionname}{Appendix}
+    \renewcommand{\thesection}{\Alph{section}}
+    \renewcommand{\thesubsection}{\Alph{section}.\arabic{subsection}}
+    \renewcommand{\perhapscolon}[1]{\perhapsdot{##1}}
+}
+
+% Bookmarks
+\hypersetup{
+    bookmarksnumbered=true
+}
+
+% Reference nome for task and subtask
+\crefname{section}{\sectionname}{\sectionnamepl}
+
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \everymath{\displaystyle}
+
+% commands for spacing
+\newcommand{\Tstrut}{\rule{0pt}{4mm}}         % = `top' strut
+\newcommand{\Bstrut}{\rule[-2mm]{0mm}{0mm}}   % = `bottom' strut
+
+% Paired Delimiters {}, (), []
+\providecommand\given{} % so it exists
+\newcommand\SetSymbol[1][]{
+   \nonscript\,#1\vert \allowbreak \nonscript\,\mathopen{}}
+\DeclarePairedDelimiterX\Set[1]{\lbrace}{\rbrace}%
+ { \renewcommand\given{\SetSymbol[\delimsize]} #1 }
+\DeclarePairedDelimiterX{\Bkt}[1]{[}{]}{#1}
+\DeclarePairedDelimiterX{\Paren}[1]{(}{)}{#1}
+\DeclarePairedDelimiterX{\Abs}[1]{\lvert}{\rvert}{#1}
+\newcommand{\PR}[1]{\Pr\Bkt*{#1}}
+\newcommand{\overbar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
+
+\newcolumntype{D}{>{$(}l<{)$}}
+\newcolumntype{R}{>{\displaystyle}r}
+\newcolumntype{C}{>{\displaystyle}c}
+\newcolumntype{L}{>{\displaystyle}l}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsfonts}
+\usepackage{amsthm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Declare operator and useful math command
+\DeclareMathOperator{\EOp}{\mathbb{E}}
+\newcommand{\E}[1]{\ensuremath{\EOp\Bkt*{#1}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\PS}[1]{\mathcal{P}(#1)}
+\newcommand{\ve}{\varepsilon}
+
+\newcommand{\sst}{\subset}
+\newcommand{\sse}{\subseteq}
+
+\newcommand{\ie}{\text{ i.e., }}
+\newcommand{\st}{\text{ s.t.  }}
+
+
+% Declare delimiter
+\DeclareMathDelimiter{\lVert}
+  {\mathopen}{symbols}{"6B}{largesymbols}{"0D}
+\DeclareMathDelimiter{\rVert}
+  {\mathclose}{symbols}{"6B}{largesymbols}{"0D}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\theoremstyle{plain}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setCJKmainfont{思源宋體 TW}
+%\setmainfont{思源宋體 TW}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+%\begin{CJK*}{UTF8}{bsmi}
+\course{Introduction to Mathematical Analysis (I)}
+\semester{Fall 2021}
+%\teacher{}
+\department{}
+\assignment{5}
+\date{\today}
+\student[$\dagger$]{Yu-Chieh Kuo}{B07611039}
+\affil[$\dagger$]{Department of Information Management, National Taiwan University}
+\ujtitle
+\problem{}
+We can prove the property from both sides respectively. Let $S$ be a topological space.
+\begin{itemize}
+    \item {($\Rightarrow$)} \\
+    Suppose $S$ is connected. Based on the
+    definition of set,
+    the only two open and closed subsets
+    are $\emptyset$ and the set $S$.
+    Hence, it's impossible to find a subset $T$ satisfying that $T$ is nonempty,
+    $T$ is a subset of $S$, and $T$ is 
+    an open and closed subset in $S$.
+    \item ($\Leftarrow$) \\
+    Let $S$ be disconnected, therefore there are two nonempty {\bf open} subsets $T, U \subseteq S$,
+    where $S = T \cup U$ and $T \cap U = \emptyset$.
+    In addition, since $T^c = U$ and $U^c = T$, $T$ and $U$ are open and closed.
+    Hence, if there doesn't exist such subsets as same as $T, U \subseteq S$ satisfying
+    $S = T \cup U$ and $T \cap U = \emptyset$, we claim that $S$ is connected.
+\end{itemize}
+Consequently, we can say that a topological space $S$ is connected if and only if
+the only subsets of $S$ which are both open and closed in $S$ are the empty set $\emptyset$
+and $S$.
+
+% p2
+\problem{}
+Interiors of connected sets are not always connected. Consider $X \subseteq \R^2$ be a metric space
+with the normal Euclidean metric. Define $B_r(x)$ be an open ball centering at $x$ in radius $r$. Take
+\[
+    E = B_1((2,0)) \cup B_1((100,0)) \cup \{(x,0) \in \R^2 : 2 \leq x \leq 100 \}.
+\]
+Here $E$ is connected but 
+\[
+    E^\circ = B_1((2,0)) \cup B_1((100,0))
+\]
+is disconnected.
+
+Closures of connected sets are always connected. It suffices to show that $E$ is disconnected if $\bar{E}$
+is disconnected. Write $\bar{E} = A \cup B$ as an union of two nonempty separated sets, and
+$A \cap \bar{B} = \emptyset, \ \bar{A} \cap B = \emptyset$. Write $E$ as $E = (A \cap E) \cup (B \cap E)$,
+and it shows that $E$ is disconnected.
+Next, we would like to show that $A \cap E$ and $B \cap E$ are separated.
+In fact,
+\[
+    (A \cap E) \cup \overline{B \cap E} \subseteq A \cap \bar{B} = \emptyset,
+\]
+\[
+    \overline{A \cap E} \cap (B \cap E) \subseteq \bar{A} \cap B = \emptyset.
+\]
+If $A \cap E = \emptyset$, therefore
+\[
+    E = (A \cap E) \cup (B \cap E) = B \cap E \implies E \subseteq B,
+\]
+and 
+\[
+    \begin{array}{RCL}
+        A & = & (A \cup B) \cap A \\
+        & = & \bar{E} \cap A \\
+        & \subseteq & \bar{B} \cap A \\
+        & = & \emptyset,
+    \end{array}
+\]
+contrary to the definition that $A$ is nonempty. Hence, $A \cap E \neq \emptyset$ here, and
+$B \cap E \neq \emptyset$ similarly. Consequently, $E$ is disconnected if $\bar{E}$ is disconnected,
+or closures of connected sets are always connected.
+
+% p3
+\problem{}
+\subproblem{}
+Note that ${\bf a} \neq {\bf b}$ or $\lvert \bf{ a - b} \rvert > 0$ since
+$A \cup B = \emptyset$, and $|{\bf p}(t) - {\bf p}(s)| = |t-s||{\bf a-b}|$. Hence, ${\bf p}(t) = {\bf p}(s)$
+if and only if $t=s$. Now we want to show that $A_0$ and $B_0$ are separated i.e., $A_0 \cap \overline{B_0} = \emptyset$
+and $\overline{A_0} \cap B_0 = \emptyset$.
+If there is $t \in A_0 \cap \overline{B_0}$, then $t \in A_0$ and $t$ is also
+a limit point of $B_0$. 
+Since $t \in A_0$, ${\bf p}(t) \in A$ as well. In addition, given any $\ve > 0$,
+there is $s \in B_0$ such that $|t-s| < \frac{\ve}{|{\bf a-b}|}$ for any $s \neq t$, which implies that
+${\bf p}(t) - {\bf p}(s) = |t-s||{\bf a-b}| < \ve$. Here ${\bf p}(s) \in B$ and ${\bf p}(s) \neq {\bf p}(t)$, so 
+${\bf p}(t)$ is a limit point of $B$. Therefore, ${\bf p}(t) \in A \cap \bar{B} = \emptyset$, contrary to the assumption that
+$A$ and $B$ are separated. It's similar to show that $\overline{A_0} \cap B_0 = \emptyset$. Therefore, we prove that 
+$A_0$ and $B_0$ are separated.
+
+\subproblem{}
+Assume for contradiction that for all $t \in (0,1)$, ${\bf p}(t)\in A\cup B$. 
+Since ${\bf p}(0)={\bf a}\in A$ and ${\bf p}(1)={\bf b}\in B$, it follows that 
+${\bf p}(t)\in A\cup B, \forall t\in [0,1]$. By definition of $A_0, B_0$, we have $[0,1]\subseteq A_0\cup B_0$. 
+Let $U=[0,1]\cap A_0$ and $V=[0,1]\cap B_0$. Since
+\[
+    {\bf p}(0)={\bf a}\in A\implies 0\in A_0\implies 0\in U,
+\]
+\[
+    {\bf p}(1)={\bf b}\in B\implies 1\in B_0\implies 1\in V,
+\]
+$U,V$ are nonempty here.
+Since $A_0, B_0$ are separated according to {\bf 3.(a)}, it shows that $U, V$ are separated and hence $[0,1]$ is separated,
+which leads to a contradiction.
+
+\subproblem{}
+Let $S$ be a subset of $\R^k$. $S$ is convex if 
+$\lambda {\bf x}+(1-\lambda) {\bf y}\in S, \forall {\bf x, y}\in S$ and $\lambda \in (0,1)$. 
+Assume for contradiction that $S$ is separated, then there exist
+nonempty sets $X,Y\st X\cup Y=S$ and $X\cap Y=\emptyset$. Pick ${\bf x}\in X$ and ${\bf y}\in Y$, by {\bf 3.(b)}, 
+there exists $\lambda\in (0,1)$ such that $\lambda {\bf x}+(1-\lambda) {\bf y}\notin S$, which contradicts the assumption that $S$ is a convex set.
+
+% p4
+\problem{}
+Following by the {\bf Definition 3.16} in Rudin, we now put $s^* = \sup E$ and $s_* = \inf E$,
+where the set $E$ contains all subsequential limits as defined in {\bf Definition 3.5} in Rudin,
+and plus possibly the number $+\infty, -\infty$.
+Now we attempt to show that the $\limsup$ and $\liminf$ defined in the statement are the same as
+that given in Rudin.
+\begin{itemize}
+    \item $\limsup_{n\to\infty}x_n = s^*$: \\
+    If $(x_n)$ is not bounded above, $\limsup_{n\to\infty}x_n = +\infty = s^*$.
+    
+    If $(x_n)$ is bounded above, for all $\ve > 0$ there exists such $N \in \N$ such that
+    \[
+        \limsup_{n\to\infty} x_n - \ve < x_N < \lim_{n\to\infty}\left(\sup_{k\geq n}x_k\right)
+        := \limsup_{n\to\infty}x_n.
+    \]
+    Therefore $\limsup_{n\to\infty}x_n := \lim_{n\to\infty}\left(\sup_{k\geq n}x_k\right)$
+    is a limit point of some subsequence of $(x_n)$, and it suffices to say $\limsup_{n\to\infty}x_n \in E$.
+    
+    Next, we would like to show that $\limsup_{n\to\infty}x_n$ is bounded.
+    Since $\limsup_{n\to\infty}x_n \in E$, assume that there exists $m > \limsup_{n\to\infty}x_n$, $m \in \R$, such that 
+    for some $n$, $x_n \geq m$ i.e.,
+    \[
+        \lim_{n'\to\infty}x_{n'} > \lim_{n\to\infty}\sup_{k\geq n}x_n,
+    \]
+    which leads to a contradiction of $\sup$. Therefore, if for some $m > \limsup_{n\to\infty}x_n$, $m \in \R$,
+    $x_n < m$ for $n \geq N$, where $N \in \N$.
+    
+    By {\bf Definition 3.17} in Rudin, $s^*$ is the only number with the properties above. Hence,
+    $\limsup_{n\to\infty}x_n$ defined in the statement is the same as $s^*$.
+    \item $\liminf_{n\to\infty}x_n = s_*$: \\
+    Following the same concept to prove $\limsup_{n\to\infty}x_n = s^*$.
+    If $(x_n)$ is not bounded below, $\liminf_{n\to\infty}x_n = -\infty = s_*$.
+    
+    If $(x_n)$ is bounded below, for all $\ve > 0$ there exists such $N \in \N$ such that
+    \[
+        \liminf_{n\to\infty} x_n := \lim_{n\to\infty}\left(\inf_{k\geq n}x_k\right) < x_N < \liminf_{n\to\infty}x_n + \ve.
+    \]
+    Therefore $\liminf_{n\to\infty}x_n := \lim_{n\to\infty}\left(\inf_{k\geq n}x_k\right)$
+    is a limit point of some subsequence of $(x_n)$, and it suffices to say $\liminf_{n\to\infty}x_n \in E$.
+    
+    Next, we would like to show that $\liminf_{n\to\infty}x_n$ is bounded.
+    Since $\liminf_{n\to\infty}x_n \in E$, assume that there exists $m > \liminf_{n\to\infty}x_n$, $m \in \R$, such that 
+    for some $n$, $x_n \geq m$ i.e.,
+    \[
+        \lim_{n'\to\infty}x_{n'} < \lim_{n\to\infty}\inf_{k\geq n}x_n,
+    \]
+    which leads to a contradiction of $\inf$. Therefore, if for some $m < \liminf_{n\to\infty}x_n$, $m \in \R$,
+    $x_n > m$ for $n \geq N$, where $N \in \N$.
+    
+    By {\bf Definition 3.17} in Rudin, $s_*$ is the only number with the properties above. Hence,
+    $\liminf_{n\to\infty}x_n$ defined in the statement is the same as $s_*$.
+\end{itemize}
+
+% p5
+\problem{}
+Following the concept in Rudin for {\bf Theorem 3.37}, we put $\alpha = \liminf_{n\to\infty}\frac{c_{n+1}}{c_n}$.
+If $\alpha = 0$, it's nothing to prove. If $\alpha > 0$, choose $\beta > \alpha$, and there is an integer $N$ such that
+$\beta \leq \frac{c_{n+1}}{c_n}$ as $n \geq N$. In particular, for any $p > 0, p \in \N$, we have
+\[
+    \beta \cdot c_{N+k} \leq c_{N+k+1} \quad (k = 0,1,\dots,p-1).
+\]
+Multiplying these inequalities, we obtain
+\[
+    \beta^p c_{N} \leq c_{N+p} \quad \text{or} \quad c_N\beta^{-N}\cdot\beta^n \leq c_n
+\]
+for $n \geq N$. Hence, it shows
+\[
+    \beta\cdot\sqrt[n]{\beta^{-N}c_{N}} \leq \sqrt[n]{c_{n}},
+\]
+so that $\liminf_{n\to\infty}\sqrt[n]{c_n}\geq\beta$. Therefore, by {\bf Theorem 3.20} in Rudin, since 
+$\beta\cdot\sqrt[n]{\beta^{-N}c_{N}} \leq \sqrt[n]{c_{n}}$ is true for every $\beta > \alpha$, we prove the inequality.
+
+%\end{CJK*}
+\end{document}
