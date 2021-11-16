@@ -1,0 +1,811 @@
+\documentclass[a4paper]{article}
+%The main tex begins from line 262
+\usepackage[top = 2.5cm, bottom = 2.5cm, left = 2cm, right = 2cm]{geometry} 
+\usepackage{amsmath} % For the usage of \because and \therefore
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{etoolbox}
+\usepackage{indentfirst}
+\usepackage{tabularx}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{authblk}
+\usepackage[calcwidth]{titlesec}
+\usepackage{bookmark}
+\usepackage[capitalize]{cleveref}
+\usepackage{array}
+\usepackage[english]{babel}
+\usepackage{enumitem} % For the usage of labeling in enumerate and itemize
+%\usepackage[utf8]{inputenc}
+%\usepackage{CJKutf8}
+\usepackage{xeCJK}
+
+\usepackage{setspace}
+\onehalfspacing
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\makeatletter
+% Macros for setting basic info
+\gdef\@uni{National Taiwan University}
+\gdef\@department{Information Management}
+\gdef\@me{Yu-Chieh Kuo}
+
+\newcommand{\course}[2][]{
+    \ifstrempty{#1}{
+        \gdef\shortcourse{#2}
+    }{
+        \gdef\shortcourse{#1}
+    }
+    \gdef\@course{#2}
+}
+\newcommand{\teacher}[1]{\gdef\@teacher{#1}}
+\newcommand{\semester}[1]{\gdef\@semester{#1}}
+\newcommand{\uni}[1]{\gdef\@uni{#1}}
+\newcommand{\department}[1]{\gdef\@department{#1}}
+\newcommand{\student}[3][]{
+    \ifstrempty{#1}{
+        \author{\textbf{#2} \textbf{#3}}
+    }{
+        \author[#1]{\textbf{#2} \textbf{#3}}
+    }
+}
+\newcommand{\assignment}[2][Homework]{
+    \ifstrempty{#2}{
+        \gdef\@assignment{#1}
+    }{
+        \gdef\@assignment{#1 #2}
+    }
+}
+
+% page style for title page
+\fancypagestyle{title}{
+    \fancyhf{}
+    \renewcommand{\headrulewidth}{0pt}
+    \cfoot{\footnotesize Page {\thepage} of \pageref{LastPage}} 
+}
+\newcommand{\ujtitle}{
+    \thispagestyle{title}
+    \noindent\begin{tabularx}{\linewidth}{Xr} % This is a simple tabular environment to align your text nicely 
+    {\large \bf{\@course}} \\
+    National Taiwan University, \@semester  \\
+    \bottomrule % \hline produces horizontal lines.
+    \end{tabularx}
+    
+    \vspace*{0.3cm}
+
+    \begin{center}
+        {\huge\bf\textsc{\@assignment}}\\[3mm]
+        {\@author}
+    \end{center}
+
+    \vspace*{0.3cm}
+}
+\newcommand{\mymaketitle}{
+    \thispagestyle{title}
+    \vspace*{-15mm}
+    \noindent\begin{tabularx}{\linewidth}{Xr}
+                                & \textsl{National Taiwan University} \\
+        \large\textbf{\@semester,} & \textsl{Department of \@department}         \\
+        \large\textbf{\@course} & \textsl{Prof. \@teacher}\Bstrut\\
+        \bottomrule
+    \end{tabularx}
+
+    \vspace*{10mm}
+
+    \begin{center}
+        {\huge\textsc{\@assignment{}}}\\[6mm]
+        {\@author}
+    \end{center}
+
+    \vspace*{1cm}
+}
+
+% page style for contents
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{13.6pt}
+\lhead{\small {\@course}: {\@assignment}}
+\rhead{\small {\@me}}
+\cfoot{\small {Page {\thepage} of \pageref{LastPage}}} 
+
+% Style for part, section, and subsection
+% Part
+\titleclass{\part}{straight}
+\titleformat{\part}
+[display]
+{\centering\bfseries}
+{\setlength{\titlewidth}{1.5\titlewidth}\large\titleline*[c]{\titlerule[.6pt]}\vspace{3pt}\MakeUppercase{\partname} \thepart}
+{0pt}
+{\LARGE\itshape}
+[{
+    \setlength{\titlewidth}{1.5\titlewidth}
+    \titleline*[c]{\titlerule*{\mdseries-}}
+}]
+\titlespacing*{\part}{0pt}{20pt}{20pt}[0pt]
+
+% Problem and subproblem
+\setcounter{secnumdepth}{0}
+\newcounter{problem}
+\newcounter{subproblem}[problem]
+\newbool{appendix}
+\gdef\problemName{Problem}
+\newcommand{\problem}[2][]{
+    \setcounter{equation}{0}
+    \ifstrempty{#1}{
+        \stepcounter{problem}
+    }{
+        \setcounter{problem}{#1}
+    }
+    \ifstrempty{#2}{
+        \ifbool{appendix}{
+            \section{\hspace{-5mm}\problemName{} \Alph{problem}.}
+        }{
+            \section{\hspace{-5mm}\problemName{} \arabic{problem}}
+        }
+    }{
+        \ifbool{appendix}{
+            \section{\hspace{-5mm}\problemName{} \Alpa{problem}: #2}
+        }{
+            \section{\hspace{-5mm}\problemName{} \arabic{problem}: #2}
+        }
+    }
+}
+\newcommand{\subproblem}[2][]{
+    \setcounter{equation}{0}
+    \ifstrempty{#1}{
+        \stepcounter{subproblem}
+    }{
+        \setcounter{subproblem}{#1}
+    }
+    \ifstrempty{#2}{
+        \ifbool{appendix}{
+            \section{\hspace{-2mm}\Alph{problem}.\arabic{subproblem}}
+        }{
+            \section{\hspace{-2mm}\arabic{problem}.(\alph{subproblem})}
+        }
+    }{
+        \ifbool{appendix}{
+            \section{\hspace{-2mm}\Alph{problem}.\arabic{subproblem}. #2}
+        }{
+            \section{\hspace{-2mm}\arabic{problem}.(\alph{subproblem}) #2}
+        }
+    }
+}
+
+% Appendix
+\newcommand{\myAppendix}{
+    \setcounter{section}{0}
+    \renewcommand{\sectionname}{Appendix}
+    \renewcommand{\thesection}{\Alph{section}}
+    \renewcommand{\thesubsection}{\Alph{section}.\arabic{subsection}}
+    \renewcommand{\perhapscolon}[1]{\perhapsdot{##1}}
+}
+
+% Bookmarks
+\hypersetup{
+    bookmarksnumbered=true
+}
+
+% Reference nome for task and subtask
+\crefname{section}{\sectionname}{\sectionnamepl}
+
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\everymath{\displaystyle} % display all math symbol as DISPLAY MODE
+
+% commands for spacing
+\newcommand{\Tstrut}{\rule{0pt}{4mm}}         % = `top' strut
+\newcommand{\Bstrut}{\rule[-2mm]{0mm}{0mm}}   % = `bottom' strut
+
+% Paired Delimiters {}, (), []
+\providecommand\given{} % so it exists
+\newcommand\SetSymbol[1][]{
+   \nonscript\,#1\vert \allowbreak \nonscript\,\mathopen{}}
+\DeclarePairedDelimiterX\Set[1]{\lbrace}{\rbrace}%
+ { \renewcommand\given{\SetSymbol[\delimsize]} #1 }
+\DeclarePairedDelimiterX{\Bkt}[1]{[}{]}{#1}
+\DeclarePairedDelimiterX{\Paren}[1]{(}{)}{#1}
+\DeclarePairedDelimiterX{\Abs}[1]{\lvert}{\rvert}{#1}
+\newcommand{\PR}[1]{\Pr\Bkt*{#1}}
+\newcommand{\overbar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
+
+\newcolumntype{D}{>{$(}l<{)$}}
+\newcolumntype{R}{>{\displaystyle}r}
+\newcolumntype{C}{>{\displaystyle}c}
+\newcolumntype{L}{>{\displaystyle}l}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsfonts}
+\usepackage{amsthm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Declare operator and useful math command
+\DeclareMathOperator{\EOp}{\mathbb{E}}
+\newcommand{\E}[1]{\ensuremath{\EOp\Bkt*{#1}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\PS}[1]{\mathcal{P}(#1)}
+\newcommand{\ve}{\varepsilon}
+\newcommand{\es}{\emptyset}
+
+\newcommand{\sst}{\subset}
+\newcommand{\sse}{\subseteq}
+\newcommand{\spt}{\supset}
+\newcommand{\spe}{\supseteq}
+
+\newcommand{\ie}{\text{ i.e., }}
+\newcommand{\st}{\text{ s.t.  }}
+
+% Declare delimiter
+\DeclareMathDelimiter{\lVert}
+  {\mathopen}{symbols}{"6B}{largesymbols}{"0D}
+\DeclareMathDelimiter{\rVert}
+  {\mathclose}{symbols}{"6B}{largesymbols}{"0D}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+\DeclarePairedDelimiter\vct{\langle}{\rangle}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\theoremstyle{plain}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setCJKmainfont{思源宋體 TW}
+%\setmainfont{思源宋體 TW}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Use listing package to display different programming language
+% Use xcolor package to display syntax color for programming language
+% Usage: \env{lstlisting}[language=LANGUAGENAME]
+% Common language name: Python, bash, C, C++, R, sh, make, Matlab
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\lstset{frame=tb,
+  language=Python,
+      aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+  columns=flexible,
+      basicstyle={\small\ttfamily},
+    numbers=none,
+    numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+      commentstyle=\color{dkgreen},
+    stringstyle=\color{mauve},
+    breaklines=true,
+  breakatwhitespace=true,
+      tabsize=3
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+%\begin{CJK*}{UTF8}{bsmi}
+\course{Introduction to Mathematical Analysis (I)}
+\semester{Fall 2021}
+%\teacher{}
+\department{}
+\assignment{7}
+\date{\today}
+\student[$\dagger$]{Yu-Chieh Kuo}{B07611039}
+\affil[$\dagger$]{Department of Information Management, National Taiwan University}
+\ujtitle
+
+% p1
+\problem{}
+\subproblem{$\sin nx$}
+We start the problem from its partial summation 
+\[
+    \sum^n_{k=1}\frac{\left(1+\frac{1}{2}+\cdots+\frac{1}{k}\right)}{k}\sin kx.
+\]
+If $x = 2m\pi$ for here $m \in \Z$, it's cleary that the series converges to zero;
+if $x \neq 2m\pi$, as the series is in the form of the multiplication of two series,
+we naturally define the following series for further use to attempt to construct
+a better-to-observe series:
+\[
+    a_k = \frac{\left(1+\frac{1}{2}+\cdots+\frac{1}{k}\right)}{k}
+    \quad \text{and} \quad
+    b_k = \sin kx.
+\]
+Here we have $a_k$ converges as
+\[
+    \begin{array}{RCL}
+        a_{k+1} - a_k & = & \frac{\left(1+\frac{1}{2}+\cdots+\frac{1}{k}+\frac{1}{k+1}\right)}{k+1}
+        - \frac{\left(1+\frac{1}{2}+\cdots+\frac{1}{k}\right)}{k} \\
+        & = & \frac{k\left(1+\frac{1}{2}+\cdots+\frac{1}{k}+\frac{1}{k+1}\right)
+        - \left(k+1\right)\left(1+\frac{1}{2}+\cdots+\frac{1}{k}\right)}{k(k+1)} \\
+        & = & \frac{\frac{k}{k+1} - \left(1+\frac{1}{2}+\cdots+\frac{1}{k}\right)}{k(k+1)} \\
+        & < & 0,
+    \end{array}
+\]
+Next we check the convergence of $b_k$. Recall that
+\[
+    -2\sin\frac{x}{2}\sin kx = \cos\left(\frac{(2k+1)x}{2}\right)
+    - \cos\left(\frac{(2k-1)x}{2}\right),
+\]
+and we obtain 
+\[
+    \begin{array}{RCL}
+         \sum^n_{k=1}b_k \ \ = \ \ \sum^n_{k=1}\sin kx & = & 
+         \frac{1}{-2\sin\frac{x}{2}}\sum^n_{k=1}-2\sin\frac{x}{2}\sin kx \\[4mm]
+         & = & \frac{\cos\left(\frac{(2n+1)x}{2}\right)-\cos\frac{x}{2}}{-2\sin\frac{x}{2}} \\[4mm]
+         & \vdots & \text{(After some trivial derivations.)} \\ [4mm]
+         & = & \frac{\sin\frac{nx}{2}\sin\frac{(n+1)x}{2}}{\sin\frac{x}{2}} \\[4mm]
+         & \leq & \frac{1}{\sin\frac{x}{2}},
+    \end{array}
+\]
+which means $b_k$ converges as well.
+
+Therefore, by Dirichlet Test, we know that the series
+$\sum^\infty_{k=1}a_kb_k = \sum^\infty_{k=1}\frac{\left(1+\frac{1}{2}+\cdots+\frac{1}{k}\right)}
+{k}\sin kx$ converges.
+
+\subproblem{$\cos nx$}
+As for substituting $\cos nx$ for $\sin nx$ for the origin series, we follow the identical steps
+to check the convergence. Here, for the series $\sum\left(1+\frac{1}{2}+\cdots+\frac{1}{n}\right)
+\frac{\cos nx}{n}$, if $x = \frac{1}{2}m\pi$ for $m \in Z$, the series converges to zero clearly;
+if $x \neq \frac{1}{2}m\pi$, by following {\bf 1.(a)}, we construct two series:
+\[
+    a_k = \frac{\left(1+\frac{1}{2}+\cdots+\frac{1}{k}\right)}{k}
+    \quad \text{and} \quad
+    b_k = \cos kx.
+\]
+As a consequence from {\bf 1.(a)}, we know that the series $a_k$ converges as
+$a_{k+1} - a_k < 0$. 
+As for the series $b_k$, it follows the same procedures to hold its convergence. Recall that 
+\[
+    2\sin\frac{x}{2}\cos kx = \sin\left(\frac{(2k+1)x}{2}\right)
+    - \sin\left(\frac{(2k-1)x}{2}\right),
+\]
+then it shows
+\[
+    \begin{array}{RCL}
+         \sum^n_{k=1}b_k \ \ = \ \ \sum^n_{k=1}\cos kx & = & 
+         \frac{1}{2\sin\frac{x}{2}}\sum^n_{k=1}2\sin\frac{x}{2}\sin kx \\[4mm]
+         & = & \frac{\sin\left(\frac{(2n+1)x}{2}\right)-\sin\frac{x}{2}}{2\sin\frac{x}{2}} \\[4mm]
+         & \vdots & \text{(After some trivial derivations.)} \\ [4mm]
+         & = & \frac{\sin\frac{nx}{2}\cos\frac{(n+1)x}{2}}{\sin\frac{x}{2}} \\[4mm]
+         & \leq & \frac{1}{\sin\frac{x}{2}},
+    \end{array}
+\]
+which leads to the fact that $b_k$ here converges as well.
+
+Therefore, by Dirichlet Test, we know that the series
+$\sum^\infty_{k=1}a_kb_k = \sum^\infty_{k=1}\frac{\left(1+\frac{1}{2}+\cdots+\frac{1}{k}\right)}
+{k}\cos kx$ converges.
+
+% p2
+\problem{}
+\subproblem{Rudin Ex. 3.8}
+Following the concept of {\bf Theorem 3.42} in Rudin, we claim that $\sum a_nb_n$ converges
+suppose
+\begin{enumerate}
+    \item The partial sums $A_n$ of $\sum a_n$ form a bounded sequence,
+    \item $b_0 \geq b_1 \geq \cdots$ (monotonicity),
+    \item $\lim_{n\to\infty}b_n = 0$.
+\end{enumerate}
+Here after we shall attempt to check the above conditions, and there are two possible
+cases for the series $\{b_n\}$:
+\begin{enumerate}
+    \item $\{b_n\}$ increases to $b$. \\
+        Here we check these three conditions. First we define $\{\beta_n\} = b-b_n$
+        for the further use.
+        \begin{enumerate}
+            \item The partial sums $A_n$ of $\sum a_n$ form a bounded sequence
+                since $\sum a_n$ converges.
+            \item A series $\{\beta_n\}$ is monotonically increasing.
+            \item $\lim_{n\to\infty}\beta_n = 0$.
+        \end{enumerate}
+        Hence, by the {\bf Theorem 3.42} in Rudin,
+        we have $\sum a_n\beta_n$ converges. In the end,
+        $\sum a_nb_n = -\sum a_n\beta_n + \sum a_nb$ converges as well.
+
+    \item $\{b_n\}$ decreases to $b$. \\
+        Follow the increasing cases, we define $\{\beta_n\} = b_n - b$, then we 
+        claim that $\sum a_n\beta_n$ converges as well by following the consequences above.
+        Therefore, we claim that $\sum a_nb_n = \sum a_n\beta_n + \sum a_nb$
+        converges.
+\end{enumerate}
+
+Here $\sum^\infty_{n=1}\frac{n^2+1}{n^{100}} \cdot \sum^n_{k=1}\frac{1}{k^2}$ is a nontrivial
+example for this property, where $a_n = \frac{n^2 + 1}{n^{100}}$ and $\{b_n\} = \sum^n_{k=1}
+\frac{1}{k^2}$.
+
+
+\subproblem{Apostol Ex. 8.27 (a)}
+We want to prove that $\sum a_nb_n$ converges if $\sum a_n$ converges and if
+$\sum(b_n - b_{n+1})$ converges absolutely. Next, by {\bf Theorem 3.41} in Rudin,
+consider a summation by parts that
+\[
+    \sum^n_{k=1}a_kb_k = A_nb_{n+1} - \sum^n_{k=1}A_k(b_{k+1}-b_k).
+\]
+Here we obtain that $\lvert\sum a_n\rvert = \lvert A_n\rvert \leq M \ \forall n \in \N$
+since $\sum a_n$ converges, and $M$ is some real number. In addition, since
+$\sum(b_n - b_{n+1})$ converges absolutely, we know that $\lim_{n\to\infty}b_n$ exists.
+Consequently we obtain that $\lim_{n\to\infty}A_nb_{n+1}$ exists and 
+\[
+    \sum^n_{k=1}\lvert A_k(b_{k+1}-b_k)\rvert \leq M\sum^n_{k=1}\lvert b_{k+1}-b_k\rvert
+    \leq M\sum^\infty_{k=1}\lvert b_{k+1}-b_k\rvert,
+\]
+where the inequality implies that $\sum^n_{k=1}A_k(b_{k+1} - b_k)$ converges. In the end,
+as $\lim_{n\to\infty}A_nb_{n+1}$ exists and $\sum^n_{k=1}A_k(b_{k+1} - b_k)$ converges,
+it shows that $\sum^n_{k=1}a_kb_k$ converges.
+
+Here $\sum^\infty_{n=1}\frac{n^2+1}{n^{100}} \cdot \frac{1}{n^2}$ is a nontrivial
+example for this property, where $a_n = \frac{n^2 + 1}{n^{100}}$ and $b_n = \frac{1}{n^2}$.
+
+\subproblem{Apostol Ex. 8.27 (b)}
+Following {\bf 2.(b)}, consider a summation by parts that
+\[
+    \sum^n_{k=1}a_kb_k = A_nb_{n+1} - \sum^n_{k=1}A_k(b_{k+1}-b_k).
+\]
+Since $b_n\to 0$ as $n\to 0$ and $\sum a_n$ has bounded partial sums, which implies 
+for some $M \in \R$, $\lvert A_n\rvert \leq M \ \forall n$, we obtain that
+$\lim_{n\to\infty}A_nb_{n+1}$ exists, and 
+\[
+    \sum^n_{k=1}\lvert A_k(b_{k+1}-b_k)\rvert \leq M\sum^n_{k=1}\lvert b_{k+1}-b_k\rvert
+    \leq M\sum^\infty_{k=1}\lvert b_{k+1}-b_k\rvert,
+\]
+where the inequality implies that $\sum^n_{k=1}A_k(b_{k+1} - b_k)$ converges. Consequently,
+as $\lim_{n\to\infty}A_nb_{n+1}$ exists and $\sum^n_{k=1}A_k(b_{k+1} - b_k)$ converges,
+it shows that $\sum^n_{k=1}a_kb_k$ converges.
+
+Here $\sum^\infty_{n=1}\frac{1}{2^n} \cdot \frac{1}{n}$ is a nontrivial example for 
+this property, where $a_n = \frac{1}{2^n}$ amd $b_n = \frac{1}{n}$.
+
+% p3
+\problem{}
+\subproblem{Prove the inequality and show the divergence of $\sum\frac{a_n}{r_n}$}
+Before the deduction, we observe that $r_n$ has some properties.
+\begin{enumerate}
+    \item $r_n$ is positive and finite since $a_n > 0$ and $\sum a_n$ converges.
+    \item $\{r_n\}$ is monotonically decreasing since $a_n > 0$.
+    \item $\{r_n\}$ converges to $0$ since $\sum a_n$ converges.
+\end{enumerate}
+Next, we derive the inequality as follows. If $m<n$, the equation is derived as
+\[
+    \begin{array}{RCLL}
+        \frac{a_m}{r_m}+\cdots +\frac{a_n}{r_m} & > &
+        \frac{a_m}{r_m}+\cdots +\frac{a_n}{r_m} & \text{(Since $\{r_n\}$ is monotonically decreasing.)} \\[3mm]
+        & = & \frac{a_m+\cdots + a_n}{r_m} & \\[3mm]
+        & = & \frac{r_m - r_{n+1}}{r_m} & \\[3mm]
+        & > & \frac{r_m - r_n}{r_m} & \text{(Since $r_n > r_{n+1}$)} \\[3mm]
+        & = & 1 - \frac{r_n}{r_m}. &
+    \end{array}
+\]
+Next, we would like to conclude that $\sum\frac{a_n}{r_n}$ diverges. Assume by contrary,
+if $\sum\frac{a_n}{r_n}$ converged, pick $\ve = \frac{1}{2} > 0$, then there exist
+a $N \in \N$ such that 
+\[
+    \lvert\frac{a_m}{r_m} + \cdots + \frac{a_n}{r_m}\rvert < \ve = \frac{1}{2},
+\]
+where $n \geq m \geq N$. By {\bf Theorem 3.22} in Rudin, taking $m=N$, the inequality
+becomes
+\[
+    1 - \frac{r_n}{r_N} < \frac{1}{2} \iff r_n > \frac{1}{2}r_N
+\]
+for $n\geq N$, contrary to the assumption that $\{r_n\}$ converges to $0$.
+
+
+\subproblem{Prove the inequality and show the divergence of $\sum\frac{a_n}{\sqrt{r_n}}$}
+Note that $a_n = r_n - r_{n+1}$ by definition, then we have
+\[
+    \begin{array}{RCL}
+        \frac{a_n}{\sqrt{r_n}} < 2(\sqrt{r_n} - \sqrt{r_{n+1}}) & \iff & 
+        \frac{r_n - r_{n+1}}{\sqrt{r_n}} < 2(\sqrt{r_n} - \sqrt{r_{n+1}}) \\[3mm]
+        & \iff & \frac{\sqrt{r_n} + \sqrt{r_{n+1}}}{\sqrt{r_n}} < 2 \\[3mm]
+        & \iff & \sqrt{r_{n+1}} < \sqrt{r_n} \\[3mm]
+        & \iff & r_{n+1} < r_n.
+    \end{array}
+\]
+This statement holds since $\{r_n\}$ is monotonically decreasing.
+
+Furthermore, to the covergence of $\sum\frac{a_n}{\sqrt{r_n}}$, consider the partial sum
+that 
+\[
+    \sum^n_{k=1}\frac{a_k}{\sqrt{r_k}} < \sum^n_{k=1}2(\sqrt{r_k} - \sqrt{r_{k+1}})
+    = 2(\sqrt{r_1} - \sqrt{r_{n+1}}) < 2\sqrt{r_1},
+\]
+which implies that $\sum^n_{k=1}\frac{a_k}{\sqrt{r_k}}$ is bounded by $2\sqrt{r_1}$.
+In addition, each term of $\sum\frac{a_n}{\sqrt{r_n}}$ is nonnegative since $a_n > 0$
+and $\sqrt{r_n} > 0$ for $n \in \N$. Therefore, we conclude that $\sum\frac{a_n}{\sqrt{r_n}}$
+converges by {\bf Theorem 3.24} in Rudin.
+
+% p4
+\problem{}
+\begin{enumerate}[label = (\alph*)]
+    \item (No need to write.)
+    \item Directly define $\{s_n\}$ by $s_n = (-1)^{n+1}$.
+    \item The answer is {\bf yes}.
+        We could construct a weird series as
+        \[
+            s_n = \begin{cases}
+                \frac{1}{n!} + m^{63} & \text{if } n = m^{89} \text{ for some } m\in \Z \\[4mm]
+                \frac{1}{n!} & \text{otherwise.}
+            \end{cases}
+        \]
+        It's clear to show that $\limsup s_n = +\infty$. Moreover, for arbitrary $n \in\N$,
+        there always exists a $m\in\Z$ such that $m^{89} \leq n < (m+1)^{89}$.
+        So, the arithmetic means $\sigma_n$ becomes
+        \[
+            \begin{array}{RCL}
+                0 & < & \sigma_n \\[4mm]
+                & = & \frac{1}{n+1}\sum^n_{k=0}s_k \\[4mm]
+                & \leq & \frac{1}{m^{89}+1}\sum^n_{k=0}s_k \\[4mm]
+                & = & \frac{1}{m^{89}+1}\left(\sum^n_{k=0}\frac{1}{n!}+\sum^m_{k=0}k^{63}\right) \\[4mm]
+                & \leq & \frac{1}{m^{89}+1}\left(\sum^\infty_{k=0}\frac{1}{n!}+\sum^m_{k=0}k^{63}\right) \\[4mm]
+                & = & \frac{e + m\cdot m^{63}}{m^{89}+1}.
+            \end{array}
+        \]
+        As $n\to\infty$, $m\to\infty$ and thus $\lim\sigma_n = 0$ as a consequence.
+
+    \item 
+        \[
+            \begin{array}{RCL}
+                \frac{1}{n+1}\sum^n_{k=1}ka_k & = & \frac{1}{n+1}\sum^n_{k=1}k(s_k-s_{k-1}) \\[4mm]
+                & = & \frac{1}{n+1}\left(\sum^n_{k=1}ks_k - \sum^n_{k=1}ks_{k-1}\right) \\[4mm]
+                & = & \frac{1}{n+1}\left(\sum^n_{k=1}ks_k - \sum^n_{k=1}(k-1)s_{k-1} - \sum^n_{k=1}s_{k-1}\right) \\[4mm]
+                & = & \frac{1}{n+1}\left(ns_n - \sum^n_{k=1}s_{k-1}\right) \\[4mm]
+                & = & \frac{1}{n+1}\left((n+1)s_n - \sum^{n+1}_{k=1}s_{k-1}\right) \\[4mm]
+                & = & s_n - \sigma_n.
+            \end{array}
+        \]
+        Here we can re-write $s_n$ as $s_n = \sigma_n + \frac{1}{n+1}\sum^n_{k=1}ka_k$ by the consequence above.
+        Since $\lim(na_n)=0$ and $\{\sigma_n\}$ converges in the statement, we obtain
+        \[
+            \lim_{n\to\infty}\frac{1}{n+1}\sum^n_{k=1}ka_k = 0,
+        \]
+        and 
+        \[
+            \lim_{n\to\infty}s_n = \lim_{n\to\infty}\sigma_n + \lim_{n\to\infty}\frac{1}{n+1}
+            \sum^n_{k=1}ka_k = \lim_{n\to\infty}\sigma_n.
+        \]
+        Thus, we conclude that $\{s_n\}$ converges as well.
+
+    \item The statement follows the outline in Rudin.
+        \begin{enumerate}[label = (\roman*)]
+            \item If $m < n$, then
+                \[
+                    \begin{array}{RCL}
+                        \sigma_n - \sigma_m & = & \frac{1}{n+1}\sum^n_{k=0}s_k
+                        - \frac{1}{m+1}\sum^m_{k=0}s_k \\[4mm]
+                        & = & \frac{1}{n+1}\sum^n_{k=0}s_k - \frac{1}{m+1}\sum^n_{k=0}s_k
+                        + \frac{1}{m+1}\sum^n_{i=m+1}s_i \\[4mm]
+                        & = & \frac{m-n}{(m+1)(n+1)}\sum^n_{k=0}s_k 
+                        + \frac{1}{m+1}\sum^n_{i=m+1}s_i \\[4mm]
+                        & = & \frac{m-n}{m+1}\sigma_n + \frac{1}{m+1}\sum^n_{i=m+1}s_i.
+                    \end{array}
+                \]
+                Multiply $\frac{m+1}{n-m}$ on both sides, we have
+                \[
+                    \begin{array}{RCL}
+                        \frac{m+1}{n-m}(\sigma_n - \sigma_m) & = & -\sigma_m
+                        + \frac{1}{n-m}\sum^n_{i=m+1}s_i \\[4mm]
+                        & = & -\sigma_n - \frac{1}{n-m}\sum^n_{i=m+1}(-s_i) \\[4mm]
+                        & = & -\sigma_n - \left(\frac{1}{n-m}\sum^n_{i=m+1}(s_n-s_i)\right)
+                        + s_n.
+                    \end{array}
+                \]
+                Therefore, by changing terms in the equation, we obtain
+                \[
+                    s_n - \sigma_n = \frac{m+1}{n-m}(\sigma_n-\sigma_m)
+                    + \frac{1}{n-m}\sum^n_{i=m+1}(s_n-s_i).
+                \]
+
+            \item For these $i$,
+                \[
+                    \begin{array}{RCLL}
+                        \lvert s_n - s_i \rvert & = & \lvert\sum^n_{k=i+1}a_k\rvert & \\[4mm]
+                        & \leq & \sum^n_{k=i+1}\lvert a_k\rvert & 
+                        \text{(By triangle inequality)} \\[4mm]
+                        & < & \sum^n_{k=i+1}\frac{M}{k} & (\lvert ka_k\rvert < M) \\[4mm]
+                        & \leq & \sum^n_{k=i+1}\frac{M}{i+1} & (k\geq i+1) \\[4mm]
+                        & = & \frac{(n-i)M}{i+1} & \text{\bf The term we need to derive.} \\[4mm]
+                        & = & \left(\frac{n-1}{i+1}-1\right)M & \\[4mm]
+                        & \leq & \left(\frac{n-1}{m+2}-1\right)M & (i \geq m+1) \\[4mm]
+                        & = & \frac{(n-m-1)M}{m+2}. & \text{\bf The term we need to derive.}
+                    \end{array}
+                \]
+
+            \item Fix $\ve > 0$ and associate with each $n$ the integer $m$ that satisfies
+                \[
+                    m \leq \frac{n-\ve}{1+\ve} < m+1.
+                \]
+                Here we know that $m\leq \frac{n-\ve}{1+\ve}<\frac{n}{1+\ve}<n$, thus,
+                by moving terms in this inequality, we obtain
+                \[
+                    \frac{m+1}{n-m}\leq\frac{1}{\ve} \iff \frac{n-m-1}{m+2} < \ve.
+                \]
+                By the step {\it (ii)}, $\lvert s_n-s_i\rvert < M\ve$.
+
+            \item Hence, re-write the equation in {\it (i)} by adding $\sigma$ on both side,
+                we have
+                \[
+                    s_n-\sigma=(\sigma_n-\sigma)+\frac{m+1}{n-m}(\sigma_n-\sigma_m)
+                    +\frac{1}{n-m}\sum^n_{i=m+1}(s_n-s_i),
+                \]
+                and by triangle inequality, it becomes
+                \[
+                    \begin{array}{RCL}
+                        \lvert s_n-\sigma\rvert & \leq & \lvert\sigma_n-\sigma\rvert
+                        + \frac{m+1}{n-m}\lvert\sigma_n-\sigma_m\rvert
+                        + \frac{1}{n-m}\sum^n_{i=m+1}\lvert s_n-s_i\rvert \\[4mm]
+                        & < & \lvert\sigma_n-\sigma\rvert
+                        + \frac{1}{\ve}\lvert\sigma_n-\sigma_m\rvert
+                        + \frac{1}{n-m}\sum^n_{i=m+1}M\ve \\[4mm]
+                        & = & \lvert\sigma_n-\sigma\rvert
+                        + \frac{1}{\ve}\lvert\sigma_n-\sigma_m\rvert + M\ve.
+                    \end{array}
+                \]
+                This inequality holds for $m,n$ satisfying $m\leq\frac{n-\ve}{1+\ve}<m+1$.
+                As $\{\sigma_n\}$ converges, there exists $N\in\N$ such that
+                \[
+                    \lvert\sigma_n-\sigma_m\rvert < \ve^2
+                    \quad \text{and} \quad
+                    \lvert\sigma_n-\sigma\rvert < \ve
+                \]
+                for $m,n \leq N$, therefore, $\lvert s_n-\sigma\rvert < (M+2)\ve$
+                holds for $n\geq 2N+3$. Note that $m$ still satisfies
+                $m\leq\frac{n-\ve}{1+\ve}<m+1$. Finally, take $\limsup$ to this inequality
+                and it becomes
+                \[
+                    \limsup_{n\to\infty}\lvert s_n-\sigma\rvert \leq (M+2)\ve.
+                \]
+                
+            \item Since $\ve$ was arbitrary, $\lim s_n = \sigma$.
+        \end{enumerate}
+\end{enumerate}
+
+
+% p5
+\problem{}
+\subproblem{}
+First consider the case $e\cdot n!$. Expand it as the form of
+\[
+    \begin{array}{RCL}
+        e\cdot n! & = & n!\cdot \sum^\infty_{k=0}\frac{1}{k!} \\
+        & = & n! \cdot \left(\sum^n_{k=0}\frac{1}{k!}
+        + \sum^\infty_{k=n+1}\frac{1}{k!}\right),
+    \end{array}
+\]
+here the first term goes to $0$ as $n\to\infty$. As for the second term, says
+$b_n = n!\cdot\sum^\infty_{k=n+1}\frac{1}{k!}$. Note that
+$\frac{1}{n+1} < b_n < \frac{1}{n} + \frac{1}{n^2} + \cdots = \frac{1}{n-1}$.
+Trickly, we can re-write $a_n$ as 
+\[
+    a_n = n\sin(2e\pi n!) \sim n\sin(2\pi b_n) = n\cdot 2\pi b_n \frac{\sin 2\pi b_n}{2\pi b_n}.
+\]
+Note that the similarity relation holds since as $n\to\infty$, the first term we mentioned
+previously goes to $0$, which implies it does not matter as $n\to\infty$. Thus, we can ignore it
+naturally.
+Consequently, take the limit as $n\to\infty$, we conclude $\lim_{n\to\infty}a_n = 2\pi$.
+
+\subproblem{}
+We use the big-O asymptotic notation $O(\cdot)$ to represent the condition as the function goes to
+the large terms i,e,. when $n\to\infty$. For example, if we say that $f(n) \in O(n^2)$,
+it indicates that as $n$ increases to very large, $f(n)$ is still be bounded above by
+$cn^2$, i.e., $f(n) \leq cn^2$ for sufficiently large $n$, and $c$ here is a constant.
+Thus, the series $a_n$ can be denoted as
+$n\sin(2\pi O(\frac{1}{n}))$. Then for the statement,
+\[
+    \lim_{n\to\infty}n^k(a_n-2\pi) = \lim_{n\to\infty}(n^{k+1}\sin(2e\pi n!) - 2\pi n^k)
+    = 2\pi\lim_{n\to\infty}n^k\left(cn\cdot\frac{1}{n}-1\right),
+\]
+here $c$ is an arbitrary constant corresponding with the big-O notation.
+Hence, $\lim_{n\to\infty}n^k(a_n-A) = 2\pi(c-1)\lim_{n\to\infty}n^k = L$ exists
+if $0\leq k<1$
+
+% p6
+\problem{}
+First we show that $f(E)$ is dense in $f(X)$.
+It suffices to show that every point $y \in f(X) - f(E)$ is a limit point of $f(E)$.
+As $y \in f(X) - f(E)$, there exists a point $x \in X-E$ such that $y = f(x)$.
+In addition, as $E$ is dense in $X$, there exists a sequence $\{x_n\}$ in $E$ such that
+as $n\to\infty$, $x_n\to x$. Let $y_n = f(x_n) \in f(E)$, by the continuity of $f$,
+it shows $y_n \to y$ as $n\to\infty$, or $y$ is a limit point of $f(E)$.
+
+Next, we show that $g(p) = f(p)$ for all $p \in X$ if $g(p) = f(p)$ for all $p \in E$.
+It can be proved that $g(p) = f(p)$ for $p \in X - E$.
+Here, pick any $p \in X-E$, there exists a sequence $\{p_n\}$ in $E$ such that as
+$n\to\infty$, $p_n\to p$. Note that here $g(p_n) = f(p_n)$, thus, by the continuity of $f$
+and $g$, $g(p) = f(p)$ for $p \in X-E$.
+
+% p7
+\problem{}
+\subproblem{Apostol Ex. 4.19}
+Following the statement, we define $g(x) = \max \{f(k):k\in[a,x]\}$, and pick any
+$c \in [a,b]$. Since $f$ is continuous at $x=c$, given $\ve > 0$, there exists a $\delta > 0$ such that
+if $x \in (c-\delta, c+\delta)$, $f(c)-\frac{\ve}{2} < f(x) < f(c) + \frac{\ve}{2}$.
+Since $g$ is defined in the interval $[a,x]$, if we select $x = c+\delta$ and the 
+corresponding function value is $f(j)$, where $j \leq c-\delta$, as $x \in (c-\delta, c+\delta)$,
+we have $g(x)=f(j)$ and $g(c) = f(j) \implies \lvert g(x)-g(c)\rvert=0$;
+if we also select $x= c+\delta$, but $j$ here, is larger than $c-\delta$, then the inequality
+\[
+    f(c)-\frac{\ve}{2} \leq g(x) \leq f(c) + \frac{\ve}{2}
+\]
+holds, which also implies that $\lvert g(x) - g(c) \rvert<\ve$.
+Thus, for any $x \in (c-\delta, c+\delta)$, we have $\lvert g(x)-g(c)\rvert<\ve$, which indicates
+that $g$ is continuous at $c \in [a,b] \iff g$ is continuous on $[a,b]$.
+
+\subproblem{Apostol Ex. 4.20}
+We prove the statement by mathematical induction. For the case $m=2$, we have
+$f = \max(f_1, f_2) = \frac{(f_1+f_2) + \lvert f_1-f_2 \rvert}{2}$, and $f$ is continuous at $x=a$
+since by assumption, every $f_k$ is continuous at $a$ of $S$ for $1\leq k \leq m$, and it shows
+that $f_1 + f_2$ and $f_1 - f_2$ are both continuous at a.
+By the induction hypothesis, suppose $m=k$ holds, then for $m=k+1$, we have
+\[
+    f = \max(f_1,\dots,f_{k+1}) = \max(\max(f_1,\dots,f_k),f_{k+1}),
+\]
+which is also continuous at $x=a$. Hence, by mathematical induction, $f$ is continuous at $x=a$.
+
+% p8
+\problem{}
+\subproblem{Rudin Ex. 4.2}
+Since $f$ is continuous and $\overline{f(E)}$, $f^{-1}\overline{f(E)}$ are closed, we have
+\[
+    E \sse f^{-1}(f(E)) \sse f^{-1}(\overline{f(E)})
+\]
+(by {\bf Theorem 4.14} in Rudin),
+and the monotonicity of closure gives that $\overline{E} \sse f^{-1}(\overline{f(E)})$, hence,
+\[
+    f(\overline{E}) \sse f(f^{-1}(\overline{f(E)})) \sse \overline{f(E)}.
+\]
+
+To give an example, let $f:(0,\infty)\to\R$ be a continuous mapping function defined as
+$f(x) = \frac{1}{x}$. Consider $E = \Z_+\sse(0,\infty)$, then $f(E) = \frac{1}{n}$ where
+$n\in\Z_+$. Therefore, we have
+\[
+    f(\overline{E}) = \frac{1}{n}, \ n\in\Z_+ \quad \text{and} \quad
+    \overline{f(E)} = \frac{1}{n}, \ n\in\Z_+\cap\{0\},
+\]
+which shows that $f(\overline{E})$ is a proper subset of $\overline{f(E)}$.
+
+\subproblem{Apostol Ex. 4.30}
+We prove the statement by proving from both sides.
+\begin{itemize}
+    \item ($\Rightarrow$) \\
+        Assume $f$ is continuous on $S$. Since $f(A) \sse cl(f(A))$,
+        it implies $A \sse f^{-1}(f(A)) \sse f^{-1}(clf(A))$.
+        Note that $f^{-1}(cl(f(A)))$ is closed since the pre-image of a closed
+        set by a continuous function is closed by {\bf Theorem 4.17} in Rudin.
+        Therefore, we have
+        \[
+            cl(A) \sse cl(f^{-1}(cl(f(A)))) \sse f^{-1}(cl(f(A)))
+            \implies
+            f(cl(A)) \sse f(f^{-1}(cl(f(A)))) \sse cl(f(A)).
+        \]
+
+    \item ($\Leftarrow$) \\
+        Assume that $f(cl(A)) \sse cl(f(A))$ for every subset $A$ of $S$.
+        Consider a closed subset $B$ and defined $f^{-1}(B) = A$, then we have
+        \[
+            f(cl(f^{-1}(C))) = f(cl(A)) \sse cl(f(A)) = cl(f(f^{-1}(C)))
+            \sse cl(C),
+        \]
+        and as $C$ is closed, $cl(C) = C$ here. Therefore, we have 
+        $f(cl(A)) \sse C$, and use this relation, we conclude that 
+        \[
+            cl(A) \sse f^{-1}(f(cl(A))) \sse f^{-1}(C) = A,
+        \]
+        which implies $A = f^{-1}(C)$ is a closed set. As a result, $f$ is continuous
+        on $S$.
+\end{itemize}
+%\end{CJK*}
+\end{document}
+
